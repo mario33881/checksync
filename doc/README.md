@@ -1,5 +1,5 @@
 # CHECKSYNC
----
+
 ## Descrizione
 Il programma verifica se due server sono sincronizzati (quindi se i file presenti su di essi sono uguali).
 > Uguali significa che devono avere la stessa dimensione, la stessa data di ultima modifica e lo stesso checksum MD5
@@ -31,7 +31,7 @@ installabile con il comando ```pip install tabulate```
 
 ## Changelog
 
-**01_01 2019-06-04:**
+**01_01 2019-06-04:** <br>
 Prima versione
 
 # Autore
