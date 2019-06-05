@@ -29,9 +29,25 @@ function get_csvelement() {
 
 function printdiffs(){
 	diffile="$1"
+	outformat="$2"
+	
+	if [ "$outformat" = "" ] ; then
+		outformat="echo"
+	fi
 	skip=true
 	oldpath=""
 	oldline=""
+	
+	if [ "$outformat" = "html" ] ; then
+		printf '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+		printf '<html xmlns="http://www.w3.org/1999/xhtml">\n'
+		printf "<head> \n <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' /> \n <title>%s</title> \n"  "checksync report"
+		#printf "<style> table { border-collapse: collapse; width: 100%; }th, td { text-align: left; padding: 8px; }tr:nth-child(even) {background-color: #f2f2f2;} </style>\n"
+  		echo '<style type="text/css"> table { border-collapse: collapse; width: 100%; }th, td { text-align: left; padding: 8px; }tr:nth-child(even) {background-color: #f2f2f2;} </style>'
+		printf "<meta name='viewport' content='width=device-width, initial-scale=1.0'/> \n </head>"
+		printf "<body> \n <div style='overflow-x:auto;'> \n"
+	fi
+
 	if [ "$diffile" != "" ] ; then
 		if [[ -f "$diffile" ]] ; then
 			
@@ -79,13 +95,24 @@ function printdiffs(){
 							#echo "Checksum MD5 file macchina fisica: $md51"
 							#echo "Checksum MD5 file macchina remota: $md52"
 							
-							printf "File presente su entrambe le macchine (locale e remota)\n$path\n\n"
+							if [ "$outformat" = "html" ] ; then
+								printf "<h3>File presente su entrambe le macchine (locale e remota)</h3><p>%s</p>\n" "$path"
+								echo "<table style='border-collapse: collapse; width: 100%;'>"
+								printf "<thead><tr><td>%s</td><td>%s</td><td>%s</td></tr></thead> \n" "" "Server 1 (locale)" "Server 2 (remoto)"
+								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Dimensione file:" "$size1" "$size2"
+								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
+								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Checksum MD5:" "$md51" "$md52"
+								printf "</table>\n"
+							else
+								printf "File presente su entrambe le macchine (locale e remota)\n$path\n\n"
 							
-							printf "%34s %34s %34s \n" "" "Server 1 (locale)" "Server 2 (remoto)"
-							printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
-							printf "%34s %34s %34s \n" "Dimensione file:" "$size1" "$size2"
-							printf "%34s %34s %34s \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
-							printf "%34s %34s %34s \n" "Checksum MD5:" "$md51" "$md52"
+								printf "%34s %34s %34s \n" "" "Server 1 (locale)" "Server 2 (remoto)"
+								printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
+								printf "%34s %34s %34s \n" "Dimensione file:" "$size1" "$size2"
+								printf "%34s %34s %34s \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
+								printf "%34s %34s %34s \n" "Checksum MD5:" "$md51" "$md52"
+								
+							fi
 						else
 							if [ "$boold" = true ] ; then
 								echo "Percorso mai visto $oldpath"
@@ -110,13 +137,23 @@ function printdiffs(){
 								#echo "Dimensione file macchina fisica: $size1"
 								#echo "Data ultima modifica file macchina fisica: $last_mod1"
 								#echo "Checksum MD5 file macchina fisica: $md51"
-								printf "File presente SOLO sulla macchina 1 (locale)\n$oldpath\n\n"
+								if [ "$outformat" = "html" ] ; then
+	                                                                printf "<h3>File presente SOLO sulla macchina 1 (locale)</h3><p>%s</p>\n" "$oldpath"
+	                                                                echo "<table style='border-collapse: collapse; width: 100%;'>"
+	                                                                printf "<thead><tr><td>%s</td><td>%s</td></tr></thead> \n" "" "Server 1 (locale)"
+	                                                                printf "<tr><td>%s</td><td>%s</td></tr> \n" "Dimensione file:" "$size1"
+	                                                                printf "<tr><td>%s</td><td>%s</td></tr> \n" "Ultima modifica:" "$last_mod1"
+	                                                                printf "<tr><td>%s</td><td>%s</td></tr> \n" "Checksum MD5:" "$md51"
+	                                                                printf "</table>\n"
+	                                                        else
+									printf "File presente SOLO sulla macchina 1 (locale)\n$oldpath\n\n"
 
-		                                                printf "%34s %34s \n" "" "Server 1 (locale)"
-		                                                printf "%s\n" "---------------------------------- ----------------------------------"
-		                                                printf "%34s %34s \n" "Dimensione file:" "$size1"
-		                                                printf "%34s %34s \n" "Ultima modifica:" "$last_mod1"
-		                                                printf "%34s %34s \n" "Checksum MD5:" "$md51"
+			                                                printf "%34s %34s \n" "" "Server 1 (locale)"
+			                                                printf "%s\n" "---------------------------------- ----------------------------------"
+			                                                printf "%34s %34s \n" "Dimensione file:" "$size1"
+			                                                printf "%34s %34s \n" "Ultima modifica:" "$last_mod1"
+			                                                printf "%34s %34s \n" "Checksum MD5:" "$md51"
+								fi
 							else
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 2"
@@ -136,16 +173,29 @@ function printdiffs(){
 	                                                        #echo "Dimensione file macchina fisica: $size2"
 	                                                        #echo "Data ultima modifica file macchina fisica: $last_mod2"
 	                                                        #echo "Checksum MD5 file macchina fisica: $md52"
-								printf "File presente SOLO sulla macchina 2 (remota)\n$oldpath\n\n"
+								if [ "$outformat" = "html" ] ; then
+                                                                        printf "<h3>File presente SOLO sulla macchina 2 (remota)</h3><p>%s</p>\n" "$oldpath"
+                                                                        echo "<table style='border-collapse: collapse; width: 100%;'>"
+                                                                        printf "<thead><tr><td>%s</td><td>%s</td></tr></thead> \n" "" "Server 2 (remoto)"
+                                                                        printf "<tr><td>%s</td><td>%s</td></tr> \n" "Dimensione file:" "$size2"
+                                                                        printf "<tr><td>%s</td><td>%s</td></tr> \n" "Ultima modifica:" "$last_mod2"
+                                                                        printf "<tr><td>%s</td><td>%s</td></tr> \n" "Checksum MD5:" "$md52"
+                                                                        printf "</table>\n"
+                                                                else
+									printf "File presente SOLO sulla macchina 2 (remota)\n$oldpath\n\n"
 
-	                                                        printf "%34s %34s \n" "" "Server 2 (remoto)"
-	                                                        printf "%s\n" "---------------------------------- ----------------------------------"
-	                                                        printf "%34s %34s \n" "Dimensione file:" "$size2"
-	                                                        printf "%34s %34s \n" "Ultima modifica:" "$last_mod2"
-	                                                        printf "%34s %34s \n" "Checksum MD5:" "$md52"
+		                                                        printf "%34s %34s \n" "" "Server 2 (remoto)"
+		                                                        printf "%s\n" "---------------------------------- ----------------------------------"
+		                                                        printf "%34s %34s \n" "Dimensione file:" "$size2"
+		                                                        printf "%34s %34s \n" "Ultima modifica:" "$last_mod2"
+		                                                        printf "%34s %34s \n" "Checksum MD5:" "$md52"
+								fi
 							fi
 						fi
-						printf "\n==========================================================================================================\n\n"
+
+						if [ "$outformat" = "echo" ] ; then
+							printf "\n==========================================================================================================\n\n"
+						fi
 					else
 						skip=false
 					fi	
@@ -153,6 +203,10 @@ function printdiffs(){
 					oldline="$line"
 				fi
 			done < "$diffile"
+
+			if [ "$outformat" = "html" ] ; then
+				printf "</div> \n </body> \n </html>"
+			fi
 		else
 			echo "File in input non esistenti"
 			exit 17

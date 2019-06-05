@@ -129,4 +129,25 @@ source "$SCRIPTPATH/utils/printdiffs.sh"
 cmd=( printdiffs "$diffout_path" )
 checksuccess 11 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
 
+# manda mail se e' installato sendmail e se e' stata inserita una mail nel file di configurazione
+sendmail_path=$( command -v sendmail )
+if [ "$sendmail_path" != "" ] ; then
+	if [ "$boold" = true ] ; then
+		echo "Sendmail e' installato"
+	fi
+	
+	data=$( date +"%F %T" )
+	htmlmessage=$( printdiffs "$diffout_path" "html" )
+	(
+	echo "From: checksyncscript@bashscript.com";
+	echo "To: <destination email>";
+	echo "Subject:Checksinc report ${data}";
+	echo "Content-Type: text/html";
+	echo "MIME-Version: 1.0";
+	echo "";
+	echo "$htmlmessage";
+	) | sendmail -t
+	
+fi
+
 SCRIPTEXIT
