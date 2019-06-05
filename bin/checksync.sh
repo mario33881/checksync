@@ -111,7 +111,7 @@ if [ "$boold" = true ] ; then
 	echo -e "\nOperazione recupero output lista file e diff tra liste file locale e remota"
 fi
 
-ssh "${user}@${ip}" "cat $getfiles_path" | diff - "$getfiles_path" | sort -k1.2 > "$diffout_path"
+ssh "${user}@${ip}" "cat $getfiles_path" | diff "$getfiles_path" -  | sort -k1.2 > "$diffout_path"
 status_code="$?"
 
 DEBUG "Comando da eseguire: 'ssh "${user}@${ip}" "cat $getfiles_path" | diff - "$getfiles_path" | sort -k1.2 > "$diffout_path"'"
@@ -124,16 +124,9 @@ if [ "$status_code" -ne 0 ] ; then
     exit 9
 fi
 
-# divido in due file separati il file di output di diff
-diff1_path="/var/tmp/bashsincserver/diffmacchina1.txt"
-diff2_path="/var/tmp/bashsincserver/diffmacchina2.txt"
-
-source "$SCRIPTPATH/utils/analizediffout.sh"
-cmd=( analizediffs "$diffout_path" "$diff1_path" "$diff2_path" )
-checksuccess 10 "Analisi output diff tra liste file locale e remota" "${cmd[@]}"
-
-# visualizzo le informazioni ottenute
-cmd=( "$SCRIPTPATH/utils/printdiffs.py" "$1" "$diff1_path" "$diff2_path" "/var/tmp/bashsincserver/most_updated.csv" )
+# visualizza le informazioni ricavate
+source "$SCRIPTPATH/utils/printdiffs.sh"
+cmd=( printdiffs "$diffout_path" )
 checksuccess 11 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
 
 SCRIPTEXIT

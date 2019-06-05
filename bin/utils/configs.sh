@@ -108,7 +108,7 @@ if [ "${logpath}" = "" ] ; then
 	if [ "$boold" = true ] ; then
         	echo "Verra' usato percorso log di default"
 	fi
-	logpath=/var/log/bashsincserver/bashsincserver.log
+	logpath=/var/log/checksync/checksync.log
 fi
 
 if [ "${ip}" = "" ] ; then
