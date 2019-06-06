@@ -2,6 +2,8 @@
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
+machine="$2" # identificativo macchina
+
 if [ "$boold" = "" ] ; then
 	boold=false
 fi
@@ -32,9 +34,10 @@ source "$SCRIPTPATH/configs.sh"
 SCRIPT_LOG="$logpath"
 source "$SCRIPTPATH/logger.sh" # importo logger
 
-fileoutfind_path="/var/tmp/bashsincserver"      # percorso cartella file con tutti i percorsi di file e cartelle
+fileoutfind_path="/var/tmp/checksync"           # percorso cartella file con tutti i percorsi di file e cartelle
 mkdir -p "$fileoutfind_path"                    # creo il percorso se non esiste
 fileoutfind="$fileoutfind_path/find_output.csv" # percorso completo cartella file con tutti i percorsi di file e cartelle
+
 
 function findtree(){
 	# La funzione si occupa di recuperare i percorsi di tutti i file e cartelle presenti sulla macchina
@@ -126,7 +129,7 @@ function getstatnmd5(){
 
 	ENTRY
 
-	echo "path;size;last_mod;md5" > ${getfiles_path}
+	echo "path;size;last_mod;md5;macchina" > ${getfiles_path}
 
 	while read line; do
 	        output=$( stat "${line}" --format="%F;%n;%Y;%s" )
@@ -140,8 +143,8 @@ function getstatnmd5(){
 	                last_mod="${ADDR[2]}"
 	                md5=$( md5sum "$path" | awk '{ print $1 }' )
 			
-			DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5}"
-	                echo "${path};${size};${last_mod};${md5}" >> ${getfiles_path}
+			DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
+	                echo "${path};${size};${last_mod};${md5};${machine}" >> ${getfiles_path}
 	        fi
 	done < ${fileoutfind}
 

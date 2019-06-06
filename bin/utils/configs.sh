@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 if [ "$boold" = "" ] ; then
 	boold=true # variabile debug
@@ -47,10 +47,6 @@ if [ "$configfile" != "" ] ; then
                 		# se la configurazione e' nella sezione macchina 2, proprieta' user
                 		user="${line:19}" # salva username
 	
-			elif [[ "$line" = "[MACCHINA 2]password = "* ]] ; then
-                		# se la configurazione e' nella sezione macchina 2, proprieta' password
-                		pass="${line:23}" # salva password
-	
 			elif [[ "$line" = "[MACCHINA 2]scppath = "* ]] ; then
                 		# se la configurazione e' nella sezione macchina 2, proprieta' scppath
                 		scp_path="${line:22}" # salva scp path
@@ -62,6 +58,10 @@ if [ "$configfile" != "" ] ; then
 			elif [[ "$line" = "[OUTPUT]diffout = "* ]] ; then
                 		# se la configurazione e' nella sezione output, proprieta' diffout
                 		diffout_path="${line:18}" # salva percorso output diffout
+			
+			elif [[ "$line" = "[NOTIFICHE]email = "* ]] ; then
+                                # se la configurazione e' nella sezione notifiche, proprieta' email
+                                email="${line:19}" # salva indirizzo email
 			fi
 		
 		done < <(stdbuf -oL "${configcmd[@]}") # l'output di questo comando e' letto riga per riga
@@ -72,10 +72,10 @@ if [ "$configfile" != "" ] ; then
 			echo "$logpath"
 			echo "$ip"
 			echo "$user"
-			echo "$pass"
 			echo "$scp_path"
 			echo "$getfiles_path"
 			echo "$diffout_path"
+			echo "$email"
 		fi
 	
 	else
@@ -97,6 +97,8 @@ fi
 # se manca il percorso remoto in cui copiare lo script verra' usato lo stesso percorso di questo programma 
 # se mancano i percorsi in output del file contenente tutte le informazioni relative ai file sul computer
 # e della differenza tra i due file (quello locale e quello remoto) verranno messi in /var/tmp/bashsincserver
+# se nel file di configurazione e' presente un indirizzo email, l'output verra' mandato anche a quella mail, altrimenti
+# verra' solo visualizzato
 
 if [ "${#analize_paths[@]}" -eq 0 ] ; then
 	echo -e "\n${analize_paths[@]}"
@@ -134,14 +136,19 @@ if [ "${getfiles_path}" = "" ] ; then
         if [ "$boold" = true ] ; then
                 echo "Verra' usato un percorso temporaneo per il file con tutte le informazioni relative ai file sul computer"
 	fi
-	getfiles_path="/var/tmp/bashsincserver/getfilesout.csv"
+	getfiles_path="/var/tmp/checksync/getfilesout.csv"
 fi
 
 if [ "${diffout_path}" = "" ] ; then
         if [ "$boold" = true ] ; then
                 echo "Verra' usato un percorso temporaneo per il file differenza tra i due getfiles"
         fi
-	diffout_path="/var/tmp/bashsincserver/diffout.csv"
+	diffout_path="/var/tmp/checksync/diffout.csv"
+fi
+
+send_email=true
+if [[ "$email" = "none" || "$email" = "" ]] ; then
+	send_email=false
 fi
 
 SCRIPT_LOG="$logpath"
@@ -161,3 +168,4 @@ DEBUG "Username macchina remota: '$user'"
 DEBUG "Percorso remoto in cui copiare script: '$scp_path'"
 DEBUG "Percorso output lista file: '$getfiles_path'"
 DEBUG "Percorso output lista con file diversi tra le due macchine: '$diffout_path'"
+DEBUG "Indirizzo email: '$email'"

@@ -2,6 +2,7 @@
 
 boold=false
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # percorso questo script
+SCRIPTDIR="$( basename $SCRIPTPATH)"
 
 # prende parametro file di configurazione ( $configfile ) e gestisce parametri
 # variabili con parametri:
@@ -14,6 +15,8 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # percorso questo script
 # scp_path         : percorso remoto a cui copiare script
 # getfiles_path    : percorso file con informazioni files computer
 # diffout_path     : percorso file con differenze delle informazioni files
+# send_email       : booleano che indica se inviare l'output via mail
+# email            : indirizzo email a cui mandare l'output ( se send_email=true )
 source "$SCRIPTPATH/utils/configs.sh"
 
 # prendi percorso dove salvare i log dalle configurazioni e importa il logger 
@@ -81,16 +84,16 @@ cmd=( scp -r "$SCRIPTPATH" "${user}@${ip}:${scp_path}" )
 checksuccess 5 "Copia script su server remoto" "${cmd[@]}"
 
 # salvo file di configurazione sul server remoto
-cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/${PWD##*/}" )
+cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/" )
 checksuccess 6 "Copia file di configurazione sul server remoto" "${cmd[@]}"
 
 # ottengo lista file su questo pc e salvo percorso file output locale
-cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" )
+cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" "Server 1" )
 checksuccess 7 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
 
 # ottengo lista file su server remoto e salvo percorso file output remoto
 inifilename=$( basename "$configfile" )
-cmd=( ssh "${user}@${ip}" "${scp_path}/${PWD##*/}/utils/getfiles.sh ${scp_path}/${PWD##*/}/${inifilename}" )
+cmd=( ssh "${user}@${ip}" "${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" "Server 2" )
 checksuccess 8 "Operazione lista file macchina remota" "${cmd[@]}"
 
 # recupero log del computer remoto
@@ -106,21 +109,21 @@ done < <( checksuccess 16 "Recupero file log remoto" "${cmd[@]}" ) # comando con
 cmd=( ssh "${user}@${ip}" "rm '$logpath'" )
 checksuccess 17 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
 
-# eseguo diff tra i due output, ordinando l'output del diff in ordine alfabetico ("ignorando" < e >)
+# eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
 if [ "$boold" = true ] ; then
-	echo -e "\nOperazione recupero output lista file e diff tra liste file locale e remota"
+	echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
 fi
 
-ssh "${user}@${ip}" "cat $getfiles_path" | diff "$getfiles_path" -  | sort -k1.2 > "$diffout_path"
+ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort > "$diffout_path"
 status_code="$?"
 
-DEBUG "Comando da eseguire: 'ssh "${user}@${ip}" "cat $getfiles_path" | diff - "$getfiles_path" | sort -k1.2 > "$diffout_path"'"
-DEBUG "Descrizione comando: 'Operazione recupero output lista file e diff tra liste file locale e remota'"
+DEBUG "Comando da eseguire: 'ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort > "$diffout_path"'"
+DEBUG "Descrizione comando: 'Operazione recupero output lista file e cat tra liste file locale e remota'"
 DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
 
 if [ "$status_code" -ne 0 ] ; then
 	# se l'operazione NON ha avuto successo, esci con status code 9
-	echo "Operazione recupero output lista file e diff tra liste file locale e remota FALLITA (status code $status_code )"
+	echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
     exit 9
 fi
 
@@ -131,16 +134,16 @@ checksuccess 11 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
 
 # manda mail se e' installato sendmail e se e' stata inserita una mail nel file di configurazione
 sendmail_path=$( command -v sendmail )
-if [ "$sendmail_path" != "" ] ; then
+if [ "$sendmail_path" != "" ] && "$send_email" ; then
 	if [ "$boold" = true ] ; then
-		echo "Sendmail e' installato"
+		echo "Sendmail e' installato ed e' stata specificata email di destinazione"
 	fi
-	
+	echo "mando una mail a $email"
 	data=$( date +"%F %T" )
 	htmlmessage=$( printdiffs "$diffout_path" "html" )
 	(
 	echo "From: checksyncscript@bashscript.com";
-	echo "To: <destination email>";
+	echo "To: ${email}";
 	echo "Subject:Checksinc report ${data}";
 	echo "Content-Type: text/html";
 	echo "MIME-Version: 1.0";

@@ -28,6 +28,24 @@ function get_csvelement() {
 
 
 function printdiffs(){
+	# funzione che si occupa della visualizzazione delle informazioni
+	#
+	# il primo parametro punta al file in cui e' stato inserito il contenuto 
+	# ordinato delle due liste file delle macchine.
+	# il secondo parametro indica come visualizzare l'output:
+	# * echo (default) : visualizza tabelle con le informazioni
+	# * html : restituisce html pronto per essere usato come body di una mail
+	#
+	# Per verificare se un file e' presente in entrambe le macchine
+	# viene controllato se il percorso e' uguale al percorso della riga precedente:
+	# * se i percorsi sono uguali, vengono confrontati md5, dimensione file e data di ultima modifica,
+	#   se anche questi sono uguali allora i file sono uguali, se una sola delle proprieta' 
+	#   e' diversa i file sono diversi
+	#
+	# * se i percorsi sono diversi significa che il percorso del file precedente e' unico:
+	#   il file e' presente su una sola delle due macchine: viene usata l'ultima proprieta' : 
+	#   la locazione del file per capire su quale macchina e' presente il file
+
 	diffile="$1"
 	outformat="$2"
 	
@@ -57,7 +75,7 @@ function printdiffs(){
 
 	                        path="${col1:2}"
 				
-				if [[ "${line:0:1}" = "<" || "${line:0:1}" = ">" ]] ; then
+				#if [ "${line:0:1}" != "" ] ; then
 				
 					if ! "$skip" ; then
 						if [ "$oldpath" = "$path" ] ; then
@@ -76,42 +94,51 @@ function printdiffs(){
 						
 							# ottengo ultima modifica file macchina fisica ( < )
 							last_mod1ts=$( get_csvelement "$oldline" 3 )
-							last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
+
+							if [[ "$last_mod1ts" =~ ^[0-9]+$ ]] ; then
+								last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
+							fi
 
 							# ottengo ultima modifica file macchina remota ( > )
 	                                                last_mod2ts=$( get_csvelement "$line" 3 )
-							last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
+  							if [[ "$last_mod2ts" =~ ^[0-9]+$ ]] ; then
+                                                                last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
+                                                        fi							
 
 							# checksum MD5 file macchina fisica ( < )
 							md51=$( get_csvelement "$oldline" 4 )
 
 							# checksum MD5 file macchina remota ( > )
 	                                                md52=$( get_csvelement "$oldline" 4 )
-							
-							#echo "Dimensione file macchina fisica: $size1"
-							#echo "Dimensione file macchina remota: $size2"
-							#echo "Data ultima modifica file macchina fisica: $last_mod1"
-							#echo "Data ultima modifica file macchina remota: $last_mod2"
-							#echo "Checksum MD5 file macchina fisica: $md51"
-							#echo "Checksum MD5 file macchina remota: $md52"
-							
-							if [ "$outformat" = "html" ] ; then
-								printf "<h3>File presente su entrambe le macchine (locale e remota)</h3><p>%s</p>\n" "$path"
-								echo "<table style='border-collapse: collapse; width: 100%;'>"
-								printf "<thead><tr><td>%s</td><td>%s</td><td>%s</td></tr></thead> \n" "" "Server 1 (locale)" "Server 2 (remoto)"
-								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Dimensione file:" "$size1" "$size2"
-								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
-								printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Checksum MD5:" "$md51" "$md52"
-								printf "</table>\n"
+        						#echo "Dimensione file macchina fisica: $size1"
+                                                        #echo "Dimensione file macchina remota: $size2"
+                                                        #echo "Data ultima modifica file macchina fisica: $last_mod1"
+                                                        #echo "Data ultima modifica file macchina remota: $last_mod2"
+                                                        #echo "Checksum MD5 file macchina fisica: $md51"
+                                                        #echo "Checksum MD5 file macchina remota: $md52"
+
+							if [ "$el2f1" = "$el2f2" ] && [ "$md51" = "$md52" ] ; then
+								: # file uguali, non fare niente
 							else
-								printf "File presente su entrambe le macchine (locale e remota)\n$path\n\n"
-							
-								printf "%34s %34s %34s \n" "" "Server 1 (locale)" "Server 2 (remoto)"
-								printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
-								printf "%34s %34s %34s \n" "Dimensione file:" "$size1" "$size2"
-								printf "%34s %34s %34s \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
-								printf "%34s %34s %34s \n" "Checksum MD5:" "$md51" "$md52"
+								if [ "$outformat" = "html" ] ; then
+									printf "<h3>File presente su entrambe le macchine (locale e remota)</h3><p>%s</p>\n" "$path"
+									echo "<table style='border-collapse: collapse; width: 100%;'>"
+									printf "<thead><tr><td>%s</td><td>%s</td><td>%s</td></tr></thead> \n" "" "Server 1 (locale)" "Server 2 (remoto)"
+									printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Dimensione file:" "$size1" "$size2"
+									printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
+									printf "<tr><td>%s</td><td>%s</td><td>%s</td></tr> \n" "Checksum MD5:" "$md51" "$md52"
+									printf "</table>\n"
+								else
+									printf "File presente su entrambe le macchine (locale e remota)\n$path\n\n"
 								
+									printf "%34s %34s %34s \n" "" "Server 1 (locale)" "Server 2 (remoto)"
+									printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
+									printf "%34s %34s %34s \n" "Dimensione file:" "$size1" "$size2"
+									printf "%34s %34s %34s \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
+									printf "%34s %34s %34s \n" "Checksum MD5:" "$md51" "$md52"
+                                    			                printf "\n==========================================================================================================\n\n"
+									
+								fi
 							fi
 						else
 							if [ "$boold" = true ] ; then
@@ -128,8 +155,11 @@ function printdiffs(){
 	                                                	size1=$( bytesToHuman "$el2f1" )
 							
 								# ottengo ultima modifica file macchina fisica ( < )
-		                                                last_mod1ts=$( get_csvelement "$oldline" 3 )
-		                                                last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
+								last_mod1ts=$( get_csvelement "$oldline" 3 )
+
+	                                                        if [[ "$last_mod1ts" =~ ^[0-9]+$ ]] ; then
+	                                                                last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
+	                                                        fi		                                                
 					
 								# checksum MD5 file macchina fisica ( < )
 		                                                md51=$( get_csvelement "$oldline" 4 )
@@ -164,8 +194,10 @@ function printdiffs(){
 	                                                        size2=$( bytesToHuman "$el2f2" )
 
 	                                                        # ottengo ultima modifica file macchina remota ( > )
-	                                                        last_mod2ts=$( get_csvelement "$oldline" 3 )
-	                                                        last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
+								last_mod2ts=$( get_csvelement "$line" 3 )
+	                                                        if [[ "$last_mod2ts" =~ ^[0-9]+$ ]] ; then
+	                                                                last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
+	                                                        fi
 
 	                                                        # checksum MD5 file macchina remota ( > )
 	                                                        md52=$( get_csvelement "$oldline" 4 )
@@ -191,17 +223,17 @@ function printdiffs(){
 		                                                        printf "%34s %34s \n" "Checksum MD5:" "$md52"
 								fi
 							fi
-						fi
 
-						if [ "$outformat" = "echo" ] ; then
-							printf "\n==========================================================================================================\n\n"
+							if [ "$outformat" = "echo" ] ; then
+                                                        	printf "\n==========================================================================================================\n\n"
+                                                	fi
 						fi
 					else
 						skip=false
 					fi	
 					oldpath="$path"
 					oldline="$line"
-				fi
+				#fi
 			done < "$diffile"
 
 			if [ "$outformat" = "html" ] ; then
