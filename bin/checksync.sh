@@ -138,7 +138,7 @@ if [ "$sendmail_path" != "" ] && "$send_email" ; then
 	if [ "$boold" = true ] ; then
 		echo "Sendmail e' installato ed e' stata specificata email di destinazione"
 	fi
-	echo "mando una mail a $email"
+	
 	data=$( date +"%F %T" )
 	htmlmessage=$( printdiffs "$diffout_path" "html" )
 	(

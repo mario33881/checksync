@@ -73,7 +73,7 @@ function printdiffs(){
 			do
 				col1=$( echo "$line" | awk -F "\"*;\"*" '{print $1}' )
 
-	                        path="${col1:2}"
+	                        path="${col1}"
 				
 				#if [ "${line:0:1}" != "" ] ; then
 				
@@ -109,7 +109,7 @@ function printdiffs(){
 							md51=$( get_csvelement "$oldline" 4 )
 
 							# checksum MD5 file macchina remota ( > )
-	                                                md52=$( get_csvelement "$oldline" 4 )
+	                                                md52=$( get_csvelement "$line" 4 )
         						#echo "Dimensione file macchina fisica: $size1"
                                                         #echo "Dimensione file macchina remota: $size2"
                                                         #echo "Data ultima modifica file macchina fisica: $last_mod1"
@@ -144,8 +144,9 @@ function printdiffs(){
 							if [ "$boold" = true ] ; then
 								echo "Percorso mai visto $oldpath"
 							fi
-
-							if [ "${oldline:0:1}" = "<" ] ; then
+							
+							machine=$( get_csvelement "$oldline" 5 )
+							if [ "${machine}" = "Server 1" ] ; then
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 1"
 								fi
@@ -194,7 +195,7 @@ function printdiffs(){
 	                                                        size2=$( bytesToHuman "$el2f2" )
 
 	                                                        # ottengo ultima modifica file macchina remota ( > )
-								last_mod2ts=$( get_csvelement "$line" 3 )
+								last_mod2ts=$( get_csvelement "$oldline" 3 )
 	                                                        if [[ "$last_mod2ts" =~ ^[0-9]+$ ]] ; then
 	                                                                last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
 	                                                        fi
