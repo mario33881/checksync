@@ -93,7 +93,7 @@ checksuccess 7 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
 
 # ottengo lista file su server remoto e salvo percorso file output remoto
 inifilename=$( basename "$configfile" )
-cmd=( ssh "${user}@${ip}" "${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" "Server 2" )
+cmd=( ssh "${user}@${ip}" "${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" "'Server 2'" )
 checksuccess 8 "Operazione lista file macchina remota" "${cmd[@]}"
 
 # recupero log del computer remoto
