@@ -48,7 +48,7 @@ function findtree(){
 
 	ENTRY
 	# variabile array che conterra il comando
-	command=('find')
+	command=(sudo 'find')
 
 	# -- SEZIONE ESECUZIONE --
 	if [ "$boold" = true ] ; then
@@ -132,7 +132,7 @@ function getstatnmd5(){
 	echo "path;size;last_mod;md5;macchina" > ${getfiles_path}
 
 	while read line; do
-	        output=$( stat "${line}" --format="%F;%n;%Y;%s" )
+	        output=$( sudo stat "${line}" --format="%F;%n;%Y;%s" )
 
 	        if [[ $output = 'regular file;'* ]] ; then
 
@@ -141,7 +141,7 @@ function getstatnmd5(){
 	                path="${ADDR[1]}"
 	                size="${ADDR[3]}"
 	                last_mod="${ADDR[2]}"
-	                md5=$( md5sum "$path" | awk '{ print $1 }' )
+	                md5=$( sudo md5sum "$path" | awk '{ print $1 }' )
 			
 			DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
 	                echo "${path};${size};${last_mod};${md5};${machine}" >> ${getfiles_path}
