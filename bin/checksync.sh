@@ -114,7 +114,7 @@ if [ "$boold" = true ] ; then
 	echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
 fi
 
-ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort > "$diffout_path"
+ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path" # -V risolve problemi con file con "-" nel nome
 status_code="$?"
 
 DEBUG "Comando da eseguire: 'ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort > "$diffout_path"'"

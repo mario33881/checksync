@@ -82,6 +82,26 @@ riavviato il daemon di sendmail con il comando ```sudo sendmail -bd```
 
 ## Changelog
 
+**03_02 2019-06-09:** <br>
+Fixes:
+* Ora il sort viene eseguito con la flag "-V" per non avere
+problemi nel riconoscimento di file presenti su entrambe le macchine
+a causa di caratteri come "-" nel nome
+> Questo avveniva ad esempio con i file ```/etc/shadow-``` e ```/etc/shadow```,
+dove questi apparivano in successione, facendo rappresentare al programma che i due file
+prima erano presenti solo su una macchina, poi solo sull'altra 
+(invece di rappresentarli presenti su entrambe le macchine)
+
+* I comandi find, stat e md5sum non bloccano piu' l'esecuzione del programma
+a causa della password perche' vengono eseguiti da sudo con la flag "-n" (non interactive).
+Questo significa che il programma cerchera' di eseguire i comandi con sudo,
+se verra' chiesta la password il programma eseguira' i comandi normalmente
+> Questo significa che in quest'ultimo caso certi file non verranno verificati con precisione
+
+* Il comando find e' stato modificato per includere direttamente solo i file,
+senza dover verificare successivamente il tipo. Per fare questo si usava
+il comando stat il cui output e' dipendente dalla lingua selezionata sulla macchina
+
 **03_01 2019-06-06:** <br>
 Fixes:
 * Ora lo script puo' essere eseguito da qualsiasi percorso
@@ -96,6 +116,10 @@ Features:
 * Lo script puo' mandare l'output di esecuzione anche via mail
 > La mail per essere inviata richiede di installare sendmail attraverso il comando ```sudo apt-get install sendmail```
 > e l'indirizzo email deve essere specificato nella configurazione
+
+Changes:
+* I comandi find, stat e md5sum ora vengono eseguiti come root
+perche' normalmente non hanno l'accesso a tutte le informazioni relative ai file
 
 **02_01 2019-06-05:** <br>
 Changes:

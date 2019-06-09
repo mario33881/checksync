@@ -48,7 +48,7 @@ function findtree(){
 
 	ENTRY
 	# variabile array che conterra il comando
-	command=(sudo 'find')
+	command=('find')
 
 	# -- SEZIONE ESECUZIONE --
 	if [ "$boold" = true ] ; then
@@ -65,7 +65,7 @@ function findtree(){
 		if [ "$boold" = true ] ; then
 			echo "Concateno $path"
 		fi
-		INFO "Percorso da analizzare: '$path'"
+		DEBUG "Percorso da analizzare: '$path'"
 		command+=("$(cd ${path}; pwd)")
 	done
 
@@ -83,7 +83,8 @@ function findtree(){
 			echo "0 percorsi da ignorare"
 		fi
 		
-		INFO "Comando percorsi NON ignorati COMPLETO: '${command[@]}'"
+		command+=("-type f") # includi solo file
+		DEBUG "Comando percorsi NON ignorati COMPLETO: '${command[@]}'"
 	else
 		# altrimenti bisogna aggiungere percorsi con cui fare prune
 		if [ "$boold" = true ] ; then
@@ -103,19 +104,24 @@ function findtree(){
 			fi
 		done
 		
-		command+=(\) "-prune -o -print")
+		command+=(\) "-prune -o -type f -print")
 		if [ "$boold" = true ] ; then
-	                echo "Comando con prune: '${command[@]}'"
-	        fi
+	        echo "Comando con prune: '${command[@]}'"
+	    fi
 
-		INFO "Comando COMPLETO: '${command[@]}'"
+		DEBUG "Comando COMPLETO: '${command[@]}'"
 	fi
 
 	# eseguo il comando e metto l'output nel file "fileoutfind"
 	DEBUG "Eseguo il comando"
-	
-	${command[@]} > $fileoutfind
-	INFO "File '$fileoutfind' aggiornato"
+	sudo -n ${command[@]} 2> /dev/null 1> $fileoutfind
+
+	if [ "$?" -ne 0 ] ; then
+        INFO "Non e' possibile eseguire seguente find con sudo: '${command[@]}'"
+		${command[@]} > $fileoutfind
+	fi
+
+	DEBUG "File '$fileoutfind' aggiornato"
 	EXIT
 }
 
@@ -129,23 +135,32 @@ function getstatnmd5(){
 
 	ENTRY
 
-	echo "path;size;last_mod;md5;macchina" > ${getfiles_path}
+	echo "size;last_mod;md5;macchina" > ${getfiles_path}
 
 	while read line; do
-	        output=$( sudo stat "${line}" --format="%F;%n;%Y;%s" )
+	    output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
+		
+		if [ "$?" -ne 0 ] ; then
+            INFO "Non e' possibile eseguire il comando stat con sudo su: '$line'"
+			output=$( stat "${line}" --format="%n;%Y;%s" )
+		fi
+	    
+		IFS=';' read -ra ADDR <<< "$output"
 
-	        if [[ $output = 'regular file;'* ]] ; then
+	    path="${ADDR[0]}"
+	    last_mod="${ADDR[1]}"
+		size="${ADDR[2]}"
 
-	                IFS=';' read -ra ADDR <<< "$output"
+	    md5=$( sudo -n md5sum "$path" 2> /dev/null | awk '{ print $1 }' )
+		
+		if [ "$?" -ne 0 ] ; then
+            INFO "Non e' possibile eseguire il comando md5sum con sudo su: '$path'"
+			md5=$( md5sum "$path" | awk '{ print $1 }' )
+		fi
 
-	                path="${ADDR[1]}"
-	                size="${ADDR[3]}"
-	                last_mod="${ADDR[2]}"
-	                md5=$( sudo md5sum "$path" | awk '{ print $1 }' )
-			
-			DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
-	                echo "${path};${size};${last_mod};${md5};${machine}" >> ${getfiles_path}
-	        fi
+		DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
+	    echo "${path};${size};${last_mod};${md5};${machine}" >> ${getfiles_path}
+	        
 	done < ${fileoutfind}
 
 	EXIT
