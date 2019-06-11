@@ -35,7 +35,7 @@ function bytesToHuman() {
     while ((b > 1024)); do
         d="$(printf ".%02d" $((b % 1024 * 100 / 1024)))"
         b=$((b / 1024))
-        let s++
+        (( s++ ))
     done
     echo "$b$d ${S[$s]}"
 }
@@ -240,7 +240,7 @@ function printdiffs(){
                 							header_filesections
 
 									# titolo sezione e percorso file
-									printf "<h3>File presente su entrambe le macchine ($hostname1 e $hostname2)</h3><p>%s</p>\n" "$path"
+									printf "<h3>File presente su entrambe le macchine (%s e %s)</h3><p>%s</p>\n" "$hostname1" "$hostname2" "$path"
 
 									# tabelle
 									printtable "$hostname1" "$size1" "$last_mod1" "$md51"
@@ -250,7 +250,7 @@ function printdiffs(){
 									divide_filesections
 								
 								else
-									printf "File presente su entrambe le macchine ($hostname1 e $hostname2)\n$path\n\n"
+									printf "File presente su entrambe le macchine (%s e %s)\n%s\n\n" "$hostname1" "$hostname2" "$path"
 								
 									printf "%34s %34s %34s \n" "" "$hostname1" "$hostname2"
 									printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
@@ -304,12 +304,12 @@ function printdiffs(){
 								if [ "$outformat" = "html" ] ; then
 									# header sezione con tutti i file
                                                                         header_filesections
-	                                                                printf "<h3>File presente SOLO su $hostname1</h3><p>%s</p>\n" "$oldpath"
+	                                                                printf "<h3>File presente SOLO su %s</h3><p>%s</p>\n" "$hostname1" "$oldpath"
 	                                                                printtable "$hostname1" "$size1" "$last_mod1" "$md51"
 									echo "</div>"
 									divide_filesections
 	                                                        else
-									printf "File presente SOLO su $hostname1\n$oldpath\n\n"
+									printf "File presente SOLO su %s\n%s\n\n" "$hostname1" "$oldpath"
 
 			                                                printf "%34s %34s \n" "" "$hostname1"
 			                                                printf "%s\n" "---------------------------------- ----------------------------------"
@@ -348,12 +348,12 @@ function printdiffs(){
 								if [ "$outformat" = "html" ] ; then
 									# header sezione con tutti i file
                                                                         header_filesections
-                                                                        printf "<h3>File presente SOLO su $hostname2</h3><p>%s</p>\n" "$oldpath"
+                                                                        printf "<h3>File presente SOLO su %s</h3><p>%s</p>\n" "$hostname2" "$oldpath"
                                                                         printtable "$hostname2" "$size2" "$last_mod2" "$md52"
 									echo "</div>"
 									divide_filesections
                                                                 else
-									printf "File presente SOLO su $hostname2\n$oldpath\n\n"
+									printf "File presente SOLO su %s\n%s\n\n" "$hostname2" "$oldpath"
 
 		                                                        printf "%34s %34s \n" "" "$hostname2"
 		                                                        printf "%s\n" "---------------------------------- ----------------------------------"

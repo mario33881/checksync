@@ -16,7 +16,7 @@
 # checksum MD5 ottenuto dal comando md5sum e l''hostname della macchina (passato al programma come secondo parametro)
 #
 
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )"
 
 machine="$2" # identificativo macchina
 
@@ -68,12 +68,12 @@ function findtree(){
 
 	# -- SEZIONE ESECUZIONE --
 	if [ "$boold" = true ] ; then
-		echo "Percorsi da analizzare: ${analize_paths[@]}"
-		echo "Percorsi da ignorare: ${toignore_paths[@]}"
+		echo "Percorsi da analizzare: ${analize_paths[*]}"
+		echo "Percorsi da ignorare: ${toignore_paths[*]}"
 	fi
 
-	DEBUG "Percorsi da analizzare: ${analize_paths[@]}"
-	DEBUG "Percorsi da ignorare: ${toignore_paths[@]}"
+	DEBUG "Percorsi da analizzare: ${analize_paths[*]}"
+	DEBUG "Percorsi da ignorare: ${toignore_paths[*]}"
 
 	# concateno i percorsi da analizzare nel comando
 	for path in "${analize_paths[@]}"
@@ -82,14 +82,14 @@ function findtree(){
 			echo "Concateno $path"
 		fi
 		DEBUG "Percorso da analizzare: '$path'"
-		command+=("$(cd ${path}; pwd)")
+		command+=("$(cd "${path}" || exit; pwd)")
 	done
 
 	if [ "$boold" = true ] ; then
-		echo "Comando: '${command[@]}'"
+		echo "Comando: '${command[*]}'"
 	fi
 
-	DEBUG "Comando percorsi NON ignorati: '${command[@]}'"
+	DEBUG "Comando percorsi NON ignorati: '${command[*]}'"
 
 	# controllo quanti sono i percorsi da ignorare
 	# se sono zero il comando find e' praticamente completo
@@ -99,8 +99,8 @@ function findtree(){
 			echo "0 percorsi da ignorare"
 		fi
 		
-		command+=("-type f") # includi solo file
-		DEBUG "Comando percorsi NON ignorati COMPLETO: '${command[@]}'"
+		command+=( -type f ) # includi solo file
+		DEBUG "Comando percorsi NON ignorati COMPLETO: '${command[*]}'"
 	else
 		# altrimenti bisogna aggiungere percorsi con cui fare prune
 		if [ "$boold" = true ] ; then
@@ -122,19 +122,19 @@ function findtree(){
 		
 		command+=(\) "-prune -o -type f -print")
 		if [ "$boold" = true ] ; then
-	        echo "Comando con prune: '${command[@]}'"
+	        echo "Comando con prune: '${command[*]}'"
 	    fi
 
-		DEBUG "Comando COMPLETO: '${command[@]}'"
+		DEBUG "Comando COMPLETO: '${command[*]}'"
 	fi
 
 	# eseguo il comando e metto l'output nel file "fileoutfind"
 	DEBUG "Eseguo il comando"
-	sudo -n ${command[@]} 2> /dev/null 1> "$fileoutfind"
+	sudo -n "${command[@]}" 2> /dev/null 1> "$fileoutfind"
 
 	if [ "$?" -ne 0 ] ; then
-        	INFO "Impossibile eseguire seguente find con sudo: '${command[@]}'"
-		${command[@]} > "$fileoutfind"
+        	INFO "Impossibile eseguire seguente find con sudo: '${command[*]}'"
+		"${command[@]}" > "$fileoutfind"
 	fi
 
 	DEBUG "File '$fileoutfind' aggiornato"
@@ -153,7 +153,7 @@ function getstatnmd5(){
 
 	echo "size;last_mod;md5;macchina" > "${getfiles_path}"
 
-	while read line; do
+	while read -r line; do
 	    output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
 		
 		if [ "$?" -ne 0 ] ; then

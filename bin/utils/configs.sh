@@ -5,7 +5,7 @@ if [ "$boold" = "" ] ; then
 fi
 
 configfile=$1 # percorso file configurazione
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # percorso questo script
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )" # percorso questo script
 
 # ============================================ GESTIONE FILE DI CONFIGURAZIONE ============================================
 #
@@ -17,7 +17,7 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )" # percorso questo script
 if [ "$configfile" != "" ] ; then
 	if [ -f "$configfile" ] ; then
 		# ogni 	riga di configurazione deve avere la sua sezione
-		configcmd=( awk -F= '/\[/{prefix=$0; next} $1{$1=$1; print prefix $0}' OFS=' = ' "$configfile" )
+		configcmd=( awk "-F=" '/\[/{prefix=$0; next} $1{$1=$1; print prefix $0}' "OFS="' = ' "$configfile" )
 
 		analize_paths=()  # contiene percorsi da analizzare
 		toignore_paths=() # contiene percorsi da ignorare
@@ -101,7 +101,7 @@ fi
 # verra' solo visualizzato
 
 if [ "${#analize_paths[@]}" -eq 0 ] ; then
-	echo -e "\n${analize_paths[@]}"
+	echo -e "\n${analize_paths[*]}"
 	echo "Nessun percorso da analizzare"
 	exit 3
 fi
@@ -160,8 +160,8 @@ else
 fi
 
 DEBUG "Ho letto le configurazioni"
-DEBUG "Parametri da analizzare: '${analize_paths[@]}'"
-DEBUG "Parametri da ignorare: '${toignore_paths[@]}'"
+DEBUG "Parametri da analizzare: '${analize_paths[*]}'"
+DEBUG "Parametri da ignorare: '${toignore_paths[*]}'"
 DEBUG "Percorso file di log: '$logpath'"
 DEBUG "Ip macchina remota: '$ip'"
 DEBUG "Username macchina remota: '$user'"

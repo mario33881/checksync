@@ -27,8 +27,8 @@
 #
 
 boold=false
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"  # percorso questo script
-SCRIPTDIR="$( basename $SCRIPTPATH )"            # nome cartella in cui risiede questo script
+SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )"  # percorso questo script
+SCRIPTDIR=$( basename "$SCRIPTPATH" )            # nome cartella in cui risiede questo script
 
 output_flag="$2" # flag di output ( -e = echo , -em o -me = mail e echo, -m = mail )
 
@@ -78,7 +78,7 @@ function checksuccess(){
 	desc="${params[1]}"        # cosa fa il comando
 	exitcode="${params[0]}"    # codice da dare in caso fallimento
 	
-	DEBUG "Comando da eseguire: '${command[@]}'"
+	DEBUG "Comando da eseguire: '${command[*]}'"
 	DEBUG "Descrizione comando: '$desc'"
 	DEBUG "Codice errore in caso di fallimento esecuzione: '$exitcode'"
 	
@@ -174,7 +174,7 @@ fi
 ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path" # -V risolve problemi con file con "-" nel nome
 status_code="$?"
 
-DEBUG "Comando da eseguire: 'ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path"'"
+DEBUG "Comando da eseguire: 'ssh ""${user}"@"${ip}"" "cat "$getfiles_path"" | cat ""$getfiles_path"" -  | sort -V > ""$diffout_path""'"
 DEBUG "Descrizione comando: 'Operazione recupero output lista file e cat tra liste file locale e remota'"
 DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
 
