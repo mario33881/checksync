@@ -1,9 +1,11 @@
 # CHECKSYNC
+![](https://i.imgur.com/rTSjWyR.png)
+
 This script **checks if two machines are synchronized** (they have the same files)
 
 Questo script **controlla se due macchine sono sincronizzate** (hanno gli stessi file)
 
-## Sezioni pagina
+## Sezioni pagina ![](https://i.imgur.com/5ACc398.png)
 * <a href="#descrizione-breve-">Descrizione breve</a>
 * <a href="#descrizione-dettagliata-">Descrizione dettagliata</a>
 * <a href="#esecuzione-script">Esecuzione script</a>
@@ -84,14 +86,14 @@ utilizzato per **creare le cartelle e il file di log**.
 5. **ottiene lista file su questo pc con lo script "getfiles.sh"**, identificandoli con l'hostname della macchina locale (output comando "hostname")
 Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguire** prima la funzione ```findtree()``` e poi ```getstatnmd5()```
 
-	findtree()
+	    findtree()
 
     La funzione ```findtree()``` **usa le informazioni ricavate dal file di configurazione** per comporre il **comando find**
     da usare per trovare i **percorsi di tutti i file** presenti sulla macchina,
     eventualmente **ignorando con -prune alcuni file/percorsi**
     > Tutti i percorsi verranno **scritti sul file** ```/var/tmp/checksync/find_output.csv
 
-	getstatnmd5()
+	    getstatnmd5()
 
     La funzione ```getstatnmd5()``` si occupa di **scorrrere il file** scritto dalla funzione ```findtree()``` e di
     **scrivere sul file $getfiles_path il percorso dei file**, **dimensione** in byte e **timestamp di ultima modifica** dati dal **comando stat**,
@@ -126,7 +128,7 @@ L'output del comando viene scritto sul file il cui percorso e' specificato sul f
 Lo script checksync.sh fa il **source dello script** "printdiffs.sh" rendendo disponibile la sua funzione 
 principale, ```printdiffs()```
 
-	printdiffs()
+	    printdiffs()
 
     La funzione **richiede come parametro il percorso del file output del comando cat**
     che contiene tutte le informazioni dei file sia del server remoto, sia del server locale.
