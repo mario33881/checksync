@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$boold" = "" ] ; then
-	boold=true # variabile debug
+	boold=false # variabile debug
 fi
 
 configfile=$1 # percorso file configurazione

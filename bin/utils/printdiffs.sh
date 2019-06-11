@@ -1,5 +1,29 @@
 #!/bin/bash
 
+# ============================================== VISUALIZZAZIONE INFORMAZIONI ===============================================
+#
+# Questo script si occupa della visualizzazione delle informazioni ricavate dagli altri script.
+# La funzione principale, "printdiffs", richiede come parametro il percorso del file output del comando cat
+# che contiene tutte le informazioni dei file sia del server remoto, sia del server locale.
+#
+# Il file viene letto riga per riga, confrontando la riga letta con la riga precedente:
+# * se il percorso del file della riga precedente e' uguale al percorso del file sulla riga attuale
+#   allora i file sono presenti su entrambe le macchine e verranno visualizzate le informazioni di entrambe.
+#   ( se dimensioni e checksum MD5 sono diversi )
+#
+#   > non ha senso quindi confrontare la riga attuale con la riga successiva perche' sappiamo gia' 
+#     che i file sono presenti su entrambe le macchine, la riga successiva dovra' essere confrontata con la sua riga successiva 
+#
+# * se i percorsi sono diversi significa che la riga precedente appartiene ad un solo server
+#   > le informazioni del file sono identificate dall'hostname della macchina
+#
+# > Per leggere i singoli elementi del file csv viene usata la funzione get_csvelement()
+#
+# Per visualizzare le informazioni printdiffs() usera' le funzioni:
+# * bytesToHuman() per rendere la dimensione in byte facilmente leggibili
+# * header_filesections(), printtable() e divide_filesections() per comporre l'html da mandare via email
+#
+
 if [ "$boold" = "" ] ; then
 	boold=false
 fi
@@ -34,7 +58,7 @@ function header_filesections() {
 
 
 function printtable(){
-	# visualizza la tabella usando questi parametri:
+	# visualizza la tabella html usando questi parametri:
 	# $1 e' l'identificativo della macchina ( es. 'Server 1 (locale)' )
 	# $2 e' la dimensione del file
 	# $3 e' la data di ultima modifica
@@ -118,6 +142,7 @@ function printdiffs(){
 	skip=true
 	oldpath=""
 	oldline=""
+	curr_hostname=$( hostname )
 	
 	if [ "$outformat" = "html" ] ; then
 		printf '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
@@ -144,74 +169,90 @@ function printdiffs(){
 			
 			while IFS= read -r line
 			do
+				# leggo primo campo con il percorso del flie
 				col1=$( echo "$line" | awk -F "\"*;\"*" '{print $1}' )
-
 	                        path="${col1}"
 				
 				if [ "${line:0:1}" = "/" ] ; then
-				
+					# verifico che la riga cominci con "/" (quindi che sia un percorso assoluto)
 					if ! "$skip" ; then
-
+						# non devo saltare la riga 
+						# (la riga deve essere saltata se sono stati trovati due percorsi uguale)
 						if [ "$oldpath" = "$path" ] ; then
+							# il percorso della riga precedente e' uguale a quello attuale:	
+							# i file sono presenti su entrambe le macchine
+
 							if [ "$boold" = true ] ; then
 								echo "Percorso gia' visto: $oldpath ($path)"
 							fi
+
 							skip=true # salto prossima riga per trovare nuove eventuali ricorrenze
 							
-							# ottengo dimensione file macchina fisica ( < )
+							# ottengo dimensione file macchina locale
 							el2f1=$( get_csvelement "$oldline" 2 )
 							size1=$( bytesToHuman "$el2f1" )
 							
-							# ottengo dimensione file macchina remota ( > )
+							# ottengo dimensione file macchina remota 
 							el2f2=$( get_csvelement "$line" 2 )
 	                                                size2=$( bytesToHuman "$el2f2" )
 						
-							# ottengo ultima modifica file macchina fisica ( < )
+							# ottengo ultima modifica file macchina locale
 							last_mod1ts=$( get_csvelement "$oldline" 3 )
 
 							if [[ "$last_mod1ts" =~ ^[0-9]+$ ]] ; then
 								last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
 							fi
 
-							# ottengo ultima modifica file macchina remota ( > )
+							# ottengo ultima modifica file macchina remota
 	                                                last_mod2ts=$( get_csvelement "$line" 3 )
   							if [[ "$last_mod2ts" =~ ^[0-9]+$ ]] ; then
                                                                 last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
-                                                        fi							
+                                                        fi
 
-							# checksum MD5 file macchina fisica ( < )
+							# checksum MD5 file macchina locale
 							md51=$( get_csvelement "$oldline" 4 )
 
-							# checksum MD5 file macchina remota ( > )
+							# checksum MD5 file macchina remota
 	                                                md52=$( get_csvelement "$line" 4 )
-        						#echo "Dimensione file macchina fisica: $size1"
-                                                        #echo "Dimensione file macchina remota: $size2"
-                                                        #echo "Data ultima modifica file macchina fisica: $last_mod1"
-                                                        #echo "Data ultima modifica file macchina remota: $last_mod2"
-                                                        #echo "Checksum MD5 file macchina fisica: $md51"
-                                                        #echo "Checksum MD5 file macchina remota: $md52"
+
+							# hostname macchina locale
+							hostname1=$( get_csvelement "$oldline" 5 )
+
+							# hostname macchina remota
+                                                        hostname2=$( get_csvelement "$line" 5 )
+							
+							DEBUG "Informazioni ricavate del file: $$oldpath"
+        						DEBUG "Dimensione file macchina locale: $size1"
+                                                        DEBUG "Dimensione file macchina remota: $size2"
+                                                        DEBUG "Data ultima modifica file macchina locale: $last_mod1"
+                                                        DEBUG "Data ultima modifica file macchina remota: $last_mod2"
+                                                        DEBUG "Checksum MD5 file macchina locale: $md51"
+                                                        DEBUG "Checksum MD5 file macchina remota: $md52"
+							DEBUG "Hostname macchina locale: $hostname1"
+							DEBUG "Hostname macchina remota: $hostname2"
 
 							if [ "$el2f1" = "$el2f2" ] && [ "$md51" = "$md52" ] ; then
 								: # file uguali, non fare niente
 							else
+								# file diversi, visualizza le informazioni
 								if [ "$outformat" = "html" ] ; then
-
-									# titolo sezione e percorso file
-									#printf "<h3>File presente su entrambe le macchine (locale e remota)</h3><p>%s</p>\n" "$path"
-									
 									# header sezione con tutti i file
                 							header_filesections
-									printf "<h3>File presente su entrambe le macchine (locale e remota)</h3><p>%s</p>\n" "$path"
+
+									# titolo sezione e percorso file
+									printf "<h3>File presente su entrambe le macchine ($hostname1 e $hostname2)</h3><p>%s</p>\n" "$path"
+
 									# tabelle
-									printtable "Server 1 (locale)" "$size1" "$last_mod1" "$md51"
-									printtable "Server 2 (remoto)" "$size2" "$last_mod2" "$md52"
+									printtable "$hostname1" "$size1" "$last_mod1" "$md51"
+									printtable "$hostname2" "$size2" "$last_mod2" "$md52"
 									echo "</div>"
+
 									divide_filesections
 								
 								else
-									printf "File presente su entrambe le macchine (locale e remota)\n$path\n\n"
+									printf "File presente su entrambe le macchine ($hostname1 e $hostname2)\n$path\n\n"
 								
-									printf "%34s %34s %34s \n" "" "Server 1 (locale)" "Server 2 (remoto)"
+									printf "%34s %34s %34s \n" "" "$hostname1" "$hostname2"
 									printf "%s\n" "---------------------------------- ---------------------------------- ----------------------------------"
 									printf "%34s %34s %34s \n" "Dimensione file:" "$size1" "$size2"
 									printf "%34s %34s %34s \n" "Ultima modifica:" "$last_mod1" "$last_mod2"
@@ -221,82 +262,100 @@ function printdiffs(){
 								fi
 							fi
 						else
+							# Il percorso precedente e' diverso dal percorso attuale:
+							# il percorso precedente e' presente in una sola macchina
+
 							if [ "$boold" = true ] ; then
 								echo "Percorso mai visto $oldpath"
 							fi
 							
-							machine=$( get_csvelement "$oldline" 5 )
-							if [ "${machine}" = "Server 1" ] ; then
+							machine=$( get_csvelement "$oldline" 5 ) # macchina contente il file
+							DEBUG "Informazioni ricavate del file: $oldpath"
+
+							if [ "${machine}" = "$curr_hostname" ] ; then
+								# se la macchina corrisponde alla macchina locale...
+
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 1"
 								fi
 
-								# ottengo dimensione file macchina fisica ( < )
+								# ottengo dimensione file macchina locale
 	                                                	el2f1=$( get_csvelement "$oldline" 2 )
 	                                                	size1=$( bytesToHuman "$el2f1" )
 							
-								# ottengo ultima modifica file macchina fisica ( < )
+								# ottengo ultima modifica file macchina locale
 								last_mod1ts=$( get_csvelement "$oldline" 3 )
 
 	                                                        if [[ "$last_mod1ts" =~ ^[0-9]+$ ]] ; then
 	                                                                last_mod1=$( date -d @"$last_mod1ts" +"%F %T" )
 	                                                        fi		                                                
 								
-								# checksum MD5 file macchina fisica ( < )
+								# checksum MD5 file macchina locale
 		                                                md51=$( get_csvelement "$oldline" 4 )
-									
-								#echo "Dimensione file macchina fisica: $size1"
-								#echo "Data ultima modifica file macchina fisica: $last_mod1"
-								#echo "Checksum MD5 file macchina fisica: $md51"
+								
+								# hostname macchina locale
+                                                       		hostname1=$( get_csvelement "$oldline" 5 )
+
+								DEBUG "Dimensione file macchina locale: $size1"
+								DEBUG "Data ultima modifica file macchina locale: $last_mod1"
+								DEBUG "Checksum MD5 file macchina locale: $md51"
+								DEBUG "Hostname macchina locale: $hostname1"
 
 								if [ "$outformat" = "html" ] ; then
 									# header sezione con tutti i file
                                                                         header_filesections
-	                                                                printf "<h3>File presente SOLO sulla macchina 1 (locale)</h3><p>%s</p>\n" "$oldpath"
-	                                                                printtable "Server 1 (locale)" "$size1" "$last_mod1" "$md51"
+	                                                                printf "<h3>File presente SOLO su $hostname1</h3><p>%s</p>\n" "$oldpath"
+	                                                                printtable "$hostname1" "$size1" "$last_mod1" "$md51"
 									echo "</div>"
 									divide_filesections
 	                                                        else
-									printf "File presente SOLO sulla macchina 1 (locale)\n$oldpath\n\n"
+									printf "File presente SOLO su $hostname1\n$oldpath\n\n"
 
-			                                                printf "%34s %34s \n" "" "Server 1 (locale)"
+			                                                printf "%34s %34s \n" "" "$hostname1"
 			                                                printf "%s\n" "---------------------------------- ----------------------------------"
 			                                                printf "%34s %34s \n" "Dimensione file:" "$size1"
 			                                                printf "%34s %34s \n" "Ultima modifica:" "$last_mod1"
 			                                                printf "%34s %34s \n" "Checksum MD5:" "$md51"
 								fi
 							else
+								# il file risiede sulla macchina remota
+
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 2"
 								fi
 
-								# ottengo dimensione file macchina remota ( > )
+								# ottengo dimensione file macchina remota
 	                                                        el2f2=$( get_csvelement "$oldline" 2 )
 	                                                        size2=$( bytesToHuman "$el2f2" )
 
-	                                                        # ottengo ultima modifica file macchina remota ( > )
+	                                                        # ottengo ultima modifica file macchina remota
 								last_mod2ts=$( get_csvelement "$oldline" 3 )
 	                                                        if [[ "$last_mod2ts" =~ ^[0-9]+$ ]] ; then
 	                                                                last_mod2=$( date -d @"$last_mod2ts" +"%F %T" )
 	                                                        fi
 
-	                                                        # checksum MD5 file macchina remota ( > )
+	                                                        # checksum MD5 file macchina remota
 	                                                        md52=$( get_csvelement "$oldline" 4 )
+								
+								# hostname macchina remota
+                                                                hostname2=$( get_csvelement "$oldline" 5 )
 
-	                                                        #echo "Dimensione file macchina fisica: $size2"
-	                                                        #echo "Data ultima modifica file macchina fisica: $last_mod2"
-	                                                        #echo "Checksum MD5 file macchina fisica: $md52"
+	                                                        DEBUG "Dimensione file macchina fisica: $size2"
+	                                                        DEBUG "Data ultima modifica file macchina fisica: $last_mod2"
+	                                                        DEBUG "Checksum MD5 file macchina fisica: $md52"
+								DEBUG "Hostname macchina remota: $hostname2"
+
 								if [ "$outformat" = "html" ] ; then
 									# header sezione con tutti i file
                                                                         header_filesections
-                                                                        printf "<h3>File presente SOLO sulla macchina 2 (remota)</h3><p>%s</p>\n" "$oldpath"
-                                                                        printtable "Server 2 (remoto)" "$size2" "$last_mod2" "$md52"
+                                                                        printf "<h3>File presente SOLO su $hostname2</h3><p>%s</p>\n" "$oldpath"
+                                                                        printtable "$hostname2" "$size2" "$last_mod2" "$md52"
 									echo "</div>"
 									divide_filesections
                                                                 else
-									printf "File presente SOLO sulla macchina 2 (remota)\n$oldpath\n\n"
+									printf "File presente SOLO su $hostname2\n$oldpath\n\n"
 
-		                                                        printf "%34s %34s \n" "" "Server 2 (remoto)"
+		                                                        printf "%34s %34s \n" "" "$hostname2"
 		                                                        printf "%s\n" "---------------------------------- ----------------------------------"
 		                                                        printf "%34s %34s \n" "Dimensione file:" "$size2"
 		                                                        printf "%34s %34s \n" "Ultima modifica:" "$last_mod2"
@@ -309,12 +368,14 @@ function printdiffs(){
                                                 	fi
 						fi
 					else
-						skip=false
+						skip=false # la prossima riga non deve essere saltata
 					fi
-					oldpath="$path"
-					oldline="$line"
+
+					oldpath="$path" # salvo percorso file precedente
+					oldline="$line" # salvo riga precedente
 				fi
-			done < "$diffile"
+
+			done < "$diffile" # file da leggere (output comando cat)
 
 			if [ "$outformat" = "html" ] ; then
 				printf "</div> \n </body> \n </html>"

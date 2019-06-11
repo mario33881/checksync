@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# ================================================= RECUPERO INFORMAZIONI =================================================
+#
+# Questo script si occupa di recuperare tutte le informazioni relative ai file sul computer.
+#
+# Per prima viene eseguita la funzione getfiles() che si occupa di eseguire prima la funzione findtree() e poi getstatnmd5()
+#
+# La funzione findtree() usa le informazioni ricavate dal file di configurazione per comporre il comando find
+# da usare per trovare i percorsi di tutti i file presenti sulla macchina, 
+# eventualmente ignorando con -prune alcuni file e/o percorsi
+# Tutti i percorsi verranno scritti sul file "/var/tmp/checksync/find_output.csv"
+#
+# La funzione getstatnmd5() si occupa di scorrrere il file scritto dalla funzione findtree() e di
+# scrivere sul file $getfiles_path il percorso dei file, dimensione in byte e timestamp dati dal comando stat,
+# checksum MD5 ottenuto dal comando md5sum e l''hostname della macchina (passato al programma come secondo parametro)
+#
+
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 machine="$2" # identificativo macchina
@@ -114,11 +130,11 @@ function findtree(){
 
 	# eseguo il comando e metto l'output nel file "fileoutfind"
 	DEBUG "Eseguo il comando"
-	sudo -n ${command[@]} 2> /dev/null 1> $fileoutfind
+	sudo -n ${command[@]} 2> /dev/null 1> "$fileoutfind"
 
 	if [ "$?" -ne 0 ] ; then
-        INFO "Non e' possibile eseguire seguente find con sudo: '${command[@]}'"
-		${command[@]} > $fileoutfind
+        	INFO "Impossibile eseguire seguente find con sudo: '${command[@]}'"
+		${command[@]} > "$fileoutfind"
 	fi
 
 	DEBUG "File '$fileoutfind' aggiornato"
@@ -135,13 +151,13 @@ function getstatnmd5(){
 
 	ENTRY
 
-	echo "size;last_mod;md5;macchina" > ${getfiles_path}
+	echo "size;last_mod;md5;macchina" > "${getfiles_path}"
 
 	while read line; do
 	    output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
 		
 		if [ "$?" -ne 0 ] ; then
-            INFO "Non e' possibile eseguire il comando stat con sudo su: '$line'"
+            INFO "Impossibile eseguire il comando stat con sudo su: '$line'"
 			output=$( stat "${line}" --format="%n;%Y;%s" )
 		fi
 	    
@@ -154,12 +170,12 @@ function getstatnmd5(){
 	    md5=$( sudo -n md5sum "$path" 2> /dev/null | awk '{ print $1 }' )
 		
 		if [ "$?" -ne 0 ] ; then
-            INFO "Non e' possibile eseguire il comando md5sum con sudo su: '$path'"
+            		INFO "Impossibile eseguire il comando md5sum con sudo su: '$path'"
 			md5=$( md5sum "$path" | awk '{ print $1 }' )
 		fi
 
 		DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
-	    echo "${path};${size};${last_mod};${md5};${machine}" >> ${getfiles_path}
+	    echo "${path};${size};${last_mod};${md5};${machine}" >> "${getfiles_path}"
 	        
 	done < ${fileoutfind}
 
@@ -177,7 +193,7 @@ function getfiles(){
 
 	ENTRY
 
-	DEBUG "recupero tutti i file e le cartelle con findtree()"
+	DEBUG "recupero tutti i file e le cartelle con funzione findtree"
 	findtree
 	DEBUG "dalla lista file e cartelle ricavo i file con dimensione, ultima modifica e md5"
 	getstatnmd5
