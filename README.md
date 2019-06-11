@@ -6,7 +6,7 @@ Questo script **controlla se due macchine sono sincronizzate** (hanno gli stessi
 ## Sezioni pagina
 * <a href="#descrizione-breve-">Descrizione breve</a>
 * <a href="#descrizione-dettagliata-">Descrizione dettagliata</a>
-* <a href="#esecuzione-script-">Esecuzione script</a>
+* <a href="#esecuzione-script">Esecuzione script</a>
 * <a href="#contenuto-archivio-">Contenuto archivio</a>
 * <a href="#changelog-">Changelog</a>
 * <a href="#autore-">Autore</a>
