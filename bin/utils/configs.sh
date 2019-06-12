@@ -4,8 +4,43 @@ if [ "$boold" = "" ] ; then
 	boold=false # variabile debug
 fi
 
-configfile=$1 # percorso file configurazione
+configfile="$1" # percorso file configurazione
+testingflag="$3"
+
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )" # percorso questo script
+
+
+function stripspaces(){
+	# rimuove tutti spazi prima e dopo la stringa
+	echo -e "${1}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+
+function valid_ipv6(){
+	# controlla se l'ipv6 passato come primo parametro e' valido
+	regex='^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$'
+	[[ $1 =~ $regex ]]
+	return $?
+}
+
+
+function valid_ipv4(){
+    # controlla se l'ipv4 passato come primo parametro e' valido
+    local  ip=$1
+    local  stat=1
+
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+    fi
+    return $stat
+}
+
 
 # ============================================ GESTIONE FILE DI CONFIGURAZIONE ============================================
 #
@@ -27,41 +62,50 @@ if [ "$configfile" != "" ] ; then
 		do
 			if [[ "$line" = "[ANALIZZA]"* ]] ; then
 				# se la configurazione e' nella sezione analizza...
-				path=$( echo "${line:10}" | sed -e 's/^[[:space:]]*//' ) # rimuovi eventuali spazi prima e dopo il percorso
+				path="${line:10}"
+				path="$( stripspaces "$path" )" # rimuovi eventuali spazi prima e dopo il percorso
 				analize_paths+=("${path}") # aggiungi percorso al vettore
 
 			elif [[ "$line" = "[IGNORA]"* ]] ; then
 				# se la configurazione e' nella sezione ignora...
-				path=$( echo "${line:8}" | sed -e 's/^[[:space:]]*//' ) # rimuovi eventuali spazi prima e dopo il percorso
+				path="${line:8}"
+				path="$( stripspaces "$path" )" # rimuovi eventuali spazi prima e dopo il percorso
                			toignore_paths+=("${path}") # aggiungi percorso al vettore
 	
 			elif [[ "$line" = "[LOG]path = "* ]] ; then
 				# se la configurazione e' nella sezione log, proprieta' path
 				logpath="${line:12}" # salva percorso del file di log
+				logpath="$( stripspaces "$logpath" )" # rimuovi eventuali spazi prima e dopo
 	
 			elif [[ "$line" = "[MACCHINA 2]ip = "* ]] ; then
 				# se la configurazione e' nella sezione macchina 2, proprieta' ip
 				ip="${line:17}" # salva indirizzo ip
+				ip="$( stripspaces "$ip" )" # rimuovi eventuali spazi prima e dopo
 
 			elif [[ "$line" = "[MACCHINA 2]user = "* ]] ; then
                 		# se la configurazione e' nella sezione macchina 2, proprieta' user
                 		user="${line:19}" # salva username
+				user="$( stripspaces "$user" )" # rimuovi eventuali spazi prima e dopo
 	
 			elif [[ "$line" = "[MACCHINA 2]scppath = "* ]] ; then
                 		# se la configurazione e' nella sezione macchina 2, proprieta' scppath
                 		scp_path="${line:22}" # salva scp path
+				scp_path="$( stripspaces "$scp_path" )" # rimuovi eventuali spazi prima e dopo
 			
 			elif [[ "$line" = "[OUTPUT]getfiles = "* ]] ; then
                 		# se la configurazione e' nella sezione output, proprieta' getfiles
                 		getfiles_path="${line:19}" # salva percorso output getfiles
-	
+				getfiles_path="$( stripspaces "$getfiles_path" )" # rimuovi eventuali spazi prima e dopo
+
 			elif [[ "$line" = "[OUTPUT]diffout = "* ]] ; then
                 		# se la configurazione e' nella sezione output, proprieta' diffout
                 		diffout_path="${line:18}" # salva percorso output diffout
+				diffout_path="$( stripspaces "$diffout_path" )" # rimuovi eventuali spazi prima e dopo
 			
 			elif [[ "$line" = "[NOTIFICHE]email = "* ]] ; then
                                 # se la configurazione e' nella sezione notifiche, proprieta' email
                                 email="${line:19}" # salva indirizzo email
+				email="$( stripspaces "$email" )" # rimuovi eventuali spazi prima e dopo
 			fi
 		
 		done < <(stdbuf -oL "${configcmd[@]}") # l'output di questo comando e' letto riga per riga
@@ -103,18 +147,44 @@ fi
 if [ "${#analize_paths[@]}" -eq 0 ] ; then
 	echo "Nessun percorso da analizzare"
 	exit 12
+
+else
+	for path in "${analize_paths[@]}"
+	do
+		if [ ! -d "$path" ] ; then
+			echo "Cartella '$path' inesistente"
+			exit 14
+		fi
+	done
 fi
 
 if [ "${logpath}" = "" ] ; then
 	if [ "$boold" = true ] ; then
         	echo "Verra' usato percorso log di default"
 	fi
-	logpath=/var/log/checksync/checksync.log
+	
+	logpath=checksync.log # se non ci sono altre possibilita' metti log nella cartella di esecuzione
+	if [ ! -d "/var/log/checksync" ] ; then
+		# se la directory in log non esiste cerca di crearla e eventualmente usala come destinazione log
+		mkdir -p "/var/log/checksync" 2>/dev/null && logpath=/var/log/checksync/checksync.log
+	else
+		# se la directory esiste usala per i log
+		logpath=/var/log/checksync/checksync.log
+	fi
 fi
 
 if [ "${ip}" = "" ] ; then
         echo "Manca l'indirizzo IP della macchina a cui connettersi"
         exit 13
+
+else
+	if valid_ipv6 "$ip" || valid_ipv4 "$ip" ; then
+		# ip valido
+		:
+	else
+		echo "Ip inserito non valido"
+		exit 15
+	fi
 fi
 
 if [ "${user}" = "" ] ; then
@@ -152,19 +222,44 @@ fi
 
 SCRIPT_LOG="$logpath"
 
-if [ -f "$SCRIPTPATH/utils/logger.sh" ] ; then
-	source "$SCRIPTPATH/utils/logger.sh"
+if [ "$testingflag" = "" ] ; then
+	if [ -f "$SCRIPTPATH/utils/logger.sh" ] ; then
+		source "$SCRIPTPATH/utils/logger.sh"
+	else
+		source "$SCRIPTPATH/logger.sh"
+	fi
+
+	DEBUG "Ho letto le configurazioni"
+	DEBUG "Parametri da analizzare: '${analize_paths[*]}'"
+	DEBUG "Parametri da ignorare: '${toignore_paths[*]}'"
+	DEBUG "Percorso file di log: '$logpath'"
+	DEBUG "Ip macchina remota: '$ip'"
+	DEBUG "Username macchina remota: '$user'"
+	DEBUG "Percorso remoto in cui copiare script: '$scp_path'"
+	DEBUG "Percorso output lista file: '$getfiles_path'"
+	DEBUG "Percorso output lista con file diversi tra le due macchine: '$diffout_path'"
+	DEBUG "Indirizzo email: '$email'"
 else
-	source "$SCRIPTPATH/logger.sh"
+	echo "Analizza: '${analize_paths[*]}'"
+	echo "Ignora: '${toignore_paths[*]}'"
+	echo "Log: '$logpath'"
+	echo "User: '$user'"
+	echo "Scp: '$scp_path'"
+	echo "Getfiles: '$getfiles_path'"
+	echo "Diffout: '$diffout_path'"
+	echo "Email: '$email'"
+	echo "Sendemail: '$send_email'"
 fi
 
-DEBUG "Ho letto le configurazioni"
-DEBUG "Parametri da analizzare: '${analize_paths[*]}'"
-DEBUG "Parametri da ignorare: '${toignore_paths[*]}'"
-DEBUG "Percorso file di log: '$logpath'"
-DEBUG "Ip macchina remota: '$ip'"
-DEBUG "Username macchina remota: '$user'"
-DEBUG "Percorso remoto in cui copiare script: '$scp_path'"
-DEBUG "Percorso output lista file: '$getfiles_path'"
-DEBUG "Percorso output lista con file diversi tra le due macchine: '$diffout_path'"
-DEBUG "Indirizzo email: '$email'"
+if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
+	# il controllo fallo solo se sei sulla macchina locale
+	if ! ping -c 1 "$ip" > /dev/null ; then
+		echo "$ip non rangiungibile"
+		exit 17
+	fi
+
+	if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
+	        echo "Cartella remota in cui copiare lo script non esiste"
+	        exit 16
+	fi
+fi
