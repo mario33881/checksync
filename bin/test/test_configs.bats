@@ -93,8 +93,9 @@ load 'libs/bats-assert/load'
     #Getfiles: '/var/tmp/checksync/getfilesout.csv' ; percorso di destinazione di default
     #Diffout: '/var/tmp/checksync/diffout.csv'      ; percorso di destinazione di default
     #Email: ''                                      ; non definita nel file di configurazione
+    #Sendemail: 'false'                             ; false perche' email non definita
 
-    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/correctipv4.ini" "testing"
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/correctipv4.ini" "batstesting-hostname" "testing"
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: ''" ]
@@ -104,6 +105,7 @@ load 'libs/bats-assert/load'
     [ "${lines[5]}" = "Getfiles: '/var/tmp/checksync/getfilesout.csv'" ]
     [ "${lines[6]}" = "Diffout: '/var/tmp/checksync/diffout.csv'" ]
     [ "${lines[7]}" = "Email: ''" ]
+    [ "${lines[8]}" = "Sendemail: 'false'" ]
 }
 
 
@@ -120,4 +122,54 @@ load 'libs/bats-assert/load'
     run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/wrongscppath.ini"
     [ "$status" -eq 16 ]
     [ "$output" = "Cartella remota in cui copiare lo script non esiste" ]
+}
+
+
+@test "configs.sh configurazione completa con email=none" {
+    #Analizza: '/etc/ /var /bin/.'   ; definito nella configurazione
+    #Ignora: '/etc/default /etc/apt' ; definito nella configurazione
+    #Log: 'customlog.txt'            ; definito nella configurazione
+    #User: 'customuser'              ; definito nella configurazione
+    #Scp: 'custompath'               ; definito nella configurazione
+    #Getfiles: 'getfiles_output.csv' ; definito nella configurazione
+    #Diffout: 'outputdiff.csv'       ; definito nella configurazione
+    #Email: 'none'                   ; definito nella configurazione
+    #Sendemail: 'false'              ; false perche' email = none
+
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/emailnone.ini" "batstesting-hostname" "testing"
+    # ignoro status perche' potrebbe non trovare scp_path remoto
+    [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
+    [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
+    [ "${lines[2]}" = "Log: 'customlog.txt'" ]
+    [ "${lines[3]}" = "User: 'customuser'" ]
+    [ "${lines[4]}" = "Scp: 'custompath'" ]
+    [ "${lines[5]}" = "Getfiles: 'getfiles_output.csv'" ]
+    [ "${lines[6]}" = "Diffout: 'outputdiff.csv'" ]
+    [ "${lines[7]}" = "Email: 'none'" ]
+    [ "${lines[8]}" = "Sendemail: 'false'" ]
+}
+
+
+@test "configs.sh configurazione completa" {
+    #Analizza: '/etc/ /var /bin/.'   ; definito nella configurazione
+    #Ignora: '/etc/default /etc/apt' ; definito nella configurazione
+    #Log: 'customlog.txt'            ; definito nella configurazione
+    #User: 'customuser'              ; definito nella configurazione
+    #Scp: 'custompath'               ; definito nella configurazione
+    #Getfiles: 'getfiles_output.csv' ; definito nella configurazione
+    #Diffout: 'outputdiff.csv'       ; definito nella configurazione
+    #Email: 'random@email.com'       ; definito nella configurazione
+    #Sendemail: 'false'              ; true perche' email definita
+
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/completeconfig.ini" "batstesting-hostname" "testing"
+    # ignoro status perche' potrebbe non trovare scp_path remoto
+    [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
+    [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
+    [ "${lines[2]}" = "Log: 'customlog.txt'" ]
+    [ "${lines[3]}" = "User: 'customuser'" ]
+    [ "${lines[4]}" = "Scp: 'custompath'" ]
+    [ "${lines[5]}" = "Getfiles: 'getfiles_output.csv'" ]
+    [ "${lines[6]}" = "Diffout: 'outputdiff.csv'" ]
+    [ "${lines[7]}" = "Email: 'random@email.com'" ]
+    [ "${lines[8]}" = "Sendemail: 'true'" ]
 }
