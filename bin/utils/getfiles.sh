@@ -21,7 +21,7 @@ SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )"
 machine="$2" # identificativo macchina
 
 if [ "$boold" = "" ] ; then
-	boold=false
+    boold=false
 fi
 
 # prende parametro file di configurazione ( $configfile ) e gestisce parametri
@@ -56,149 +56,149 @@ fileoutfind="$fileoutfind_path/find_output.csv" # percorso completo cartella fil
 
 
 function findtree(){
-	# La funzione si occupa di recuperare i percorsi di tutti i file e cartelle presenti sulla macchina
-	# per fare questo la funzione:
-	# * concatena tutti i percorsi da cercare nel comando find
-	# * se sono presenti percorsi da ignorare nelle configurazioni queste verranno concatenate nel prune di find
-	# Infine il comando verra' eseguito e l'output finira' nel file $fileoutfind
+    # La funzione si occupa di recuperare i percorsi di tutti i file e cartelle presenti sulla macchina
+    # per fare questo la funzione:
+    # * concatena tutti i percorsi da cercare nel comando find
+    # * se sono presenti percorsi da ignorare nelle configurazioni queste verranno concatenate nel prune di find
+    # Infine il comando verra' eseguito e l'output finira' nel file $fileoutfind
 
-	ENTRY
-	# variabile array che conterra il comando
-	command=('find')
+    ENTRY
+    # variabile array che conterra il comando
+    command=('find')
 
-	# -- SEZIONE ESECUZIONE --
-	if [ "$boold" = true ] ; then
-		echo "Percorsi da analizzare: ${analize_paths[*]}"
-		echo "Percorsi da ignorare: ${toignore_paths[*]}"
-	fi
+    # -- SEZIONE ESECUZIONE --
+    if [ "$boold" = true ] ; then
+        echo "Percorsi da analizzare: ${analize_paths[*]}"
+        echo "Percorsi da ignorare: ${toignore_paths[*]}"
+    fi
 
-	DEBUG "Percorsi da analizzare: ${analize_paths[*]}"
-	DEBUG "Percorsi da ignorare: ${toignore_paths[*]}"
+    DEBUG "Percorsi da analizzare: ${analize_paths[*]}"
+    DEBUG "Percorsi da ignorare: ${toignore_paths[*]}"
 
-	# concateno i percorsi da analizzare nel comando
-	for path in "${analize_paths[@]}"
-	do
-		if [ "$boold" = true ] ; then
-			echo "Concateno $path"
-		fi
-		DEBUG "Percorso da analizzare: '$path'"
-		command+=("$(cd "${path}" || exit; pwd)")
-	done
+    # concateno i percorsi da analizzare nel comando
+    for path in "${analize_paths[@]}"
+    do
+        if [ "$boold" = true ] ; then
+            echo "Concateno $path"
+        fi
+        DEBUG "Percorso da analizzare: '$path'"
+        command+=("$(cd "${path}" || exit; pwd)")
+    done
 
-	if [ "$boold" = true ] ; then
-		echo "Comando: '${command[*]}'"
-	fi
+    if [ "$boold" = true ] ; then
+        echo "Comando: '${command[*]}'"
+    fi
 
-	DEBUG "Comando percorsi NON ignorati: '${command[*]}'"
+    DEBUG "Comando percorsi NON ignorati: '${command[*]}'"
 
-	# controllo quanti sono i percorsi da ignorare
-	# se sono zero il comando find e' praticamente completo
-	if [ "${#toignore_paths[@]}" -eq 0 ] ; then
-		# se sono zero il comando find e' praticamente completo
-		if [ "$boold" = true ] ; then
-			echo "0 percorsi da ignorare"
-		fi
-		
-		command+=( -type f ) # includi solo file
-		DEBUG "Comando percorsi NON ignorati COMPLETO: '${command[*]}'"
-	else
-		# altrimenti bisogna aggiungere percorsi con cui fare prune
-		if [ "$boold" = true ] ; then
-			echo "ci cono percorsi da ignorare"
-		fi
-		
-		# inizio a concatenare i percorsi per il prune
-		command+=(\()
-		for path in "${toignore_paths[@]}"
-		do
-			command+=(-path "${path}")
-			DEBUG "Percorso da ignorare: '${path}'"
-			# se path e' l'ultimo elemento del l'array di percorsi da ignorare
-			# non concatenare -o (OR)
-			if [ "$path" != "${toignore_paths[-1]}" ] ; then
-				command+=(-o)
-			fi
-		done
-		
-		command+=(\) -prune -o -type f -print)
-		if [ "$boold" = true ] ; then
-	        echo "Comando con prune: '${command[*]}'"
-	    fi
+    # controllo quanti sono i percorsi da ignorare
+    # se sono zero il comando find e' praticamente completo
+    if [ "${#toignore_paths[@]}" -eq 0 ] ; then
+        # se sono zero il comando find e' praticamente completo
+        if [ "$boold" = true ] ; then
+            echo "0 percorsi da ignorare"
+        fi
+        
+        command+=( -type f ) # includi solo file
+        DEBUG "Comando percorsi NON ignorati COMPLETO: '${command[*]}'"
+    else
+        # altrimenti bisogna aggiungere percorsi con cui fare prune
+        if [ "$boold" = true ] ; then
+            echo "ci cono percorsi da ignorare"
+        fi
+        
+        # inizio a concatenare i percorsi per il prune
+        command+=(\()
+        for path in "${toignore_paths[@]}"
+        do
+            command+=(-path "${path}")
+            DEBUG "Percorso da ignorare: '${path}'"
+            # se path e' l'ultimo elemento del l'array di percorsi da ignorare
+            # non concatenare -o (OR)
+            if [ "$path" != "${toignore_paths[-1]}" ] ; then
+                command+=(-o)
+            fi
+        done
+        
+        command+=(\) -prune -o -type f -print)
+        if [ "$boold" = true ] ; then
+            echo "Comando con prune: '${command[*]}'"
+        fi
 
-		DEBUG "Comando COMPLETO: '${command[*]}'"
-	fi
+        DEBUG "Comando COMPLETO: '${command[*]}'"
+    fi
 
-	# eseguo il comando e metto l'output nel file "fileoutfind"
-	DEBUG "Eseguo il comando"
-	sudo -n "${command[@]}" 2> /dev/null 1> "$fileoutfind"
+    # eseguo il comando e metto l'output nel file "fileoutfind"
+    DEBUG "Eseguo il comando"
+    sudo -n "${command[@]}" 2> /dev/null 1> "$fileoutfind"
 
-	if [ "$?" -ne 0 ] ; then
-        	INFO "Impossibile eseguire seguente find con sudo: '${command[*]}'"
-		"${command[@]}" > "$fileoutfind"
-	fi
+    if [ "$?" -ne 0 ] ; then
+            INFO "Impossibile eseguire seguente find con sudo: '${command[*]}'"
+        "${command[@]}" > "$fileoutfind"
+    fi
 
-	DEBUG "File '$fileoutfind' aggiornato"
-	EXIT
+    DEBUG "File '$fileoutfind' aggiornato"
+    EXIT
 }
 
 
 function getstatnmd5(){
-	# La funzione scorre il file $fileoutfind con tutti i percorsi
-	# di file e cartelle, controlla se sono file o cartelle:
-	# se sono file ottiene con il comando stat dimensione e ultima modifica
-	# e con il comando md5sum ottiene l'hash MD5 del file.
-	# Le informazioni ottenute verranno scritte sul file $getfiles_path
+    # La funzione scorre il file $fileoutfind con tutti i percorsi
+    # di file e cartelle, controlla se sono file o cartelle:
+    # se sono file ottiene con il comando stat dimensione e ultima modifica
+    # e con il comando md5sum ottiene l'hash MD5 del file.
+    # Le informazioni ottenute verranno scritte sul file $getfiles_path
 
-	ENTRY
+    ENTRY
 
-	echo "size;last_mod;md5;macchina" > "${getfiles_path}"
+    echo "size;last_mod;md5;macchina" > "${getfiles_path}"
 
-	while read -r line; do
-	    output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
-		
-		if [ "$?" -ne 0 ] ; then
+    while read -r line; do
+        output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
+        
+        if [ "$?" -ne 0 ] ; then
             INFO "Impossibile eseguire il comando stat con sudo su: '$line'"
-			output=$( stat "${line}" --format="%n;%Y;%s" )
-		fi
-	    
-		IFS=';' read -ra ADDR <<< "$output"
+            output=$( stat "${line}" --format="%n;%Y;%s" )
+        fi
+        
+        IFS=';' read -ra ADDR <<< "$output"
 
-	    path="${ADDR[0]}"
-	    last_mod="${ADDR[1]}"
-		size="${ADDR[2]}"
+        path="${ADDR[0]}"
+        last_mod="${ADDR[1]}"
+        size="${ADDR[2]}"
 
-	    md5=$( sudo -n md5sum "$path" 2> /dev/null | awk '{ print $1 }' )
-		
-		if [ "$?" -ne 0 ] ; then
-            		INFO "Impossibile eseguire il comando md5sum con sudo su: '$path'"
-			md5=$( md5sum "$path" | awk '{ print $1 }' )
-		fi
+        md5=$( sudo -n md5sum "$path" 2> /dev/null | awk '{ print $1 }' )
+        
+        if [ "$?" -ne 0 ] ; then
+                    INFO "Impossibile eseguire il comando md5sum con sudo su: '$path'"
+            md5=$( md5sum "$path" | awk '{ print $1 }' )
+        fi
 
-		DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
-	    echo "${path};${size};${last_mod};${md5};${machine}" >> "${getfiles_path}"
-	        
-	done < ${fileoutfind}
+        DEBUG "Informazioni ricavate: ${path};${size};${last_mod};${md5};${machine}"
+        echo "${path};${size};${last_mod};${md5};${machine}" >> "${getfiles_path}"
+            
+    done < ${fileoutfind}
 
-	EXIT
+    EXIT
 }
 
 
 function getfiles(){
-	# Questa funzione si occupa di richiamare due funzioni:
-	# findtree    : recupera lista di tutti i file e cartelle ignorando certi percorsi
-	# getstatnmd5 : verifica quali percorsi puntano a file (non cartelle) e usa
-	#		i comandi stat e md5sum per recuperare la data di ultima modifica, 
-	#		la dimensione e l'hash MD5 dei file
-	#
+    # Questa funzione si occupa di richiamare due funzioni:
+    # findtree    : recupera lista di tutti i file e cartelle ignorando certi percorsi
+    # getstatnmd5 : verifica quali percorsi puntano a file (non cartelle) e usa
+    #		i comandi stat e md5sum per recuperare la data di ultima modifica, 
+    #		la dimensione e l'hash MD5 dei file
+    #
 
-	ENTRY
+    ENTRY
 
-	DEBUG "recupero tutti i file e le cartelle con funzione findtree"
-	findtree
-	DEBUG "dalla lista file e cartelle ricavo i file con dimensione, ultima modifica e md5"
-	getstatnmd5
-	
-	EXIT
+    DEBUG "recupero tutti i file e le cartelle con funzione findtree"
+    findtree
+    DEBUG "dalla lista file e cartelle ricavo i file con dimensione, ultima modifica e md5"
+    getstatnmd5
+    
+    EXIT
 }
 
 

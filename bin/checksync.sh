@@ -2,7 +2,7 @@
 
 #
 # Nome programma    : checksync
-# Versione          : 03_03
+# Versione          : 03_04
 # Autore            : Zenaro Stefano
 # Github repository : https://github.com/mario33881/checksync
 #
@@ -62,73 +62,73 @@ source "$SCRIPTPATH/utils/logger.sh"
 
 
 function checksuccess(){
-	# questa funzione si occupa di eseguire comandi e
-	# di verificarne il successo
-	#
-	# il primo parametro e' il status code con cui far uscire lo script
-	# in caso di errore, il secondo parametro e' la descrizione di cio'
-	# che fa il comando (utile con boold=true per debug e in caso di errore)
-	# e gli altri parametri compongono il comando da eseguire
-	
-	ENTRY
+    # questa funzione si occupa di eseguire comandi e
+    # di verificarne il successo
+    #
+    # il primo parametro e' il status code con cui far uscire lo script
+    # in caso di errore, il secondo parametro e' la descrizione di cio'
+    # che fa il comando (utile con boold=true per debug e in caso di errore)
+    # e gli altri parametri compongono il comando da eseguire
+    
+    ENTRY
 
-	params=("$@") # array di tutti i parametri
-	
-	command=("${params[@]:2}") # comando da eseguire
-	desc="${params[1]}"        # cosa fa il comando
-	exitcode="${params[0]}"    # codice da dare in caso fallimento
-	
-	DEBUG "Comando da eseguire: '${command[*]}'"
-	DEBUG "Descrizione comando: '$desc'"
-	DEBUG "Codice errore in caso di fallimento esecuzione: '$exitcode'"
-	
-	if [ "$boold" = true ] ; then
-		# se in debug
-		echo -e "\n$desc" # visualizzo descrizione comando
-	fi
-	
-	out=$( "${command[@]}" ) # eseguo il comando salvando l'output
-	status_code="$?"         # e salvo il status code dell'esecuzione
-	
-	if [ "$out" != "" ] ; then
-		# se c'e' l'output questo viene visualizzato
-		echo "$out"
-	fi
-	
-	if [ "$status_code" -ne 0 ] ; then
-	        # se l'operazione NON ha avuto successo, esci con status code $exitcode
-	        echo "$desc FALLITA (status code $status_code )"
-		ERROR "$desc FALLITA (status code $status_code )"
-	        exit "$exitcode"
-	fi
+    params=("$@") # array di tutti i parametri
+    
+    command=("${params[@]:2}") # comando da eseguire
+    desc="${params[1]}"        # cosa fa il comando
+    exitcode="${params[0]}"    # codice da dare in caso fallimento
+    
+    DEBUG "Comando da eseguire: '${command[*]}'"
+    DEBUG "Descrizione comando: '$desc'"
+    DEBUG "Codice errore in caso di fallimento esecuzione: '$exitcode'"
+    
+    if [ "$boold" = true ] ; then
+        # se in debug
+        echo -e "\n$desc" # visualizzo descrizione comando
+    fi
+    
+    out=$( "${command[@]}" ) # eseguo il comando salvando l'output
+    status_code="$?"         # e salvo il status code dell'esecuzione
+    
+    if [ "$out" != "" ] ; then
+        # se c'e' l'output questo viene visualizzato
+        echo "$out"
+    fi
+    
+    if [ "$status_code" -ne 0 ] ; then
+            # se l'operazione NON ha avuto successo, esci con status code $exitcode
+            echo "$desc FALLITA (status code $status_code )"
+        ERROR "$desc FALLITA (status code $status_code )"
+            exit "$exitcode"
+    fi
 
-	EXIT
+    EXIT
 }
 
 
 function email_sender(){
-	# manda mail se e' installato sendmail e se e' stata inserita una mail nel file di configurazione
-	
-	sendmail_path=$( command -v sendmail ) # verifico se sendmail e' installato ( se != "" )
-	if [ "$sendmail_path" != "" ] && "$send_email" ; then
-	        if [ "$boold" = true ] ; then
-	                echo "Sendmail e' installato ed e' stata specificata email di destinazione"
-	        fi
+    # manda mail se e' installato sendmail e se e' stata inserita una mail nel file di configurazione
+    
+    sendmail_path=$( command -v sendmail ) # verifico se sendmail e' installato ( se != "" )
+    if [ "$sendmail_path" != "" ] && "$send_email" ; then
+            if [ "$boold" = true ] ; then
+                    echo "Sendmail e' installato ed e' stata specificata email di destinazione"
+            fi
 
-	        data=$( date +"%F %T" ) # data "yyyy/mm/dd hh:mm:ss"
+            data=$( date +"%F %T" ) # data "yyyy/mm/dd hh:mm:ss"
 
-	        htmlmessage=$( printdiffs "$diffout_path" "html" ) # ottieni html con tutte le informazioni
-	        (
-	        echo "From: checksyncscript@bashscript.com"; # mail mittente
-	        echo "To: ${email}";                         # mail destinatario ( da file di configurazione )
-	        echo "Subject:Checksinc report ${data}";     # oggetto della mail
-	        echo "Content-Type: text/html";              # il contenuto mail e' tipo html
-	        echo "MIME-Version: 1.0";
-	        echo "";
-	        echo "$htmlmessage"; # messaggio (html)
-	        ) | sendmail -t # usa sendmail per mandare la mail
+            htmlmessage=$( printdiffs "$diffout_path" "html" ) # ottieni html con tutte le informazioni
+            (
+            echo "From: checksyncscript@bashscript.com"; # mail mittente
+            echo "To: ${email}";                         # mail destinatario ( da file di configurazione )
+            echo "Subject:Checksinc report ${data}";     # oggetto della mail
+            echo "Content-Type: text/html";              # il contenuto mail e' tipo html
+            echo "MIME-Version: 1.0";
+            echo "";
+            echo "$htmlmessage"; # messaggio (html)
+            ) | sendmail -t # usa sendmail per mandare la mail
 
-	fi
+    fi
 }
 
 
@@ -159,7 +159,7 @@ cmd=( ssh "${user}@${ip}" "cat '$logpath'" )
 while IFS= read -r line
 # scorri log
 do
-	echo "$line" >> "$logpath" # inserisco nel file di log le righe del file di log remoto
+    echo "$line" >> "$logpath" # inserisco nel file di log le righe del file di log remoto
 done < <( checksuccess 24 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
 
 # rimuovo log incompleto remoto
@@ -168,7 +168,7 @@ checksuccess 25 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
 
 # eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
 if [ "$boold" = true ] ; then
-	echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
+    echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
 fi
 
 ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path" # -V risolve problemi con file con "-" nel nome
@@ -179,8 +179,8 @@ DEBUG "Descrizione comando: 'Operazione recupero output lista file e cat tra lis
 DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
 
 if [ "$status_code" -ne 0 ] ; then
-	# se l'operazione NON ha avuto successo, esci con status code 9
-	echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
+    # se l'operazione NON ha avuto successo, esci con status code 9
+    echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
     exit 26
 fi
 
@@ -188,17 +188,17 @@ fi
 source "$SCRIPTPATH/utils/printdiffs.sh"
 
 if [ "$output_flag" = "-m" ] ; then
-	# manda solo la mail con le informazioni
-	cmd=( email_sender )
+    # manda solo la mail con le informazioni
+    cmd=( email_sender )
 
 elif [ "$output_flag" = "-me" ] || [ "$output_flag" = "-em" ] ; then
-	# manda mail e visualizza le informazioni su terminale
-	cmd=( printdiffs "$diffout_path" )
-	"${cmd[@]}"
-	cmd=( email_sender )
+    # manda mail e visualizza le informazioni su terminale
+    cmd=( printdiffs "$diffout_path" )
+    "${cmd[@]}"
+    cmd=( email_sender )
 else
-	# visualizza le informazioni su terminale
-	cmd=( printdiffs "$diffout_path" )
+    # visualizza le informazioni su terminale
+    cmd=( printdiffs "$diffout_path" )
 fi
 
 checksuccess 27 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
