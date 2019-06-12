@@ -111,16 +111,16 @@ function findtree(){
 		command+=(\()
 		for path in "${toignore_paths[@]}"
 		do
-			command+=("-path ${path}")
+			command+=(-path "${path}")
 			DEBUG "Percorso da ignorare: '${path}'"
 			# se path e' l'ultimo elemento del l'array di percorsi da ignorare
 			# non concatenare -o (OR)
 			if [ "$path" != "${toignore_paths[-1]}" ] ; then
-				command+=("-o")
+				command+=(-o)
 			fi
 		done
 		
-		command+=(\) "-prune -o -type f -print")
+		command+=(\) -prune -o -type f -print)
 		if [ "$boold" = true ] ; then
 	        echo "Comando con prune: '${command[*]}'"
 	    fi

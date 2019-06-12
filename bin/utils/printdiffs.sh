@@ -114,6 +114,11 @@ function divide_filesections() {
 }
 
 
+function echo_stats(){
+	printf "Sul server %s sono stati analizzati %s file di cui %s sono presenti sul server %s %s\n" "$1" "$2" "$3" "$4" "$5"
+}
+
+
 function printdiffs(){
 	# funzione che si occupa della visualizzazione delle informazioni
 	#
@@ -144,6 +149,11 @@ function printdiffs(){
 	oldline=""
 	curr_hostname=$( hostname )
 	
+	n_files1=0
+	n_files2=0
+	n_eqfiles1=0
+	n_eqfiles2=0
+
 	if [ "$outformat" = "html" ] ; then
 		printf '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
 		printf '<html xmlns="http://www.w3.org/1999/xhtml">\n'
@@ -230,9 +240,14 @@ function printdiffs(){
                                                         DEBUG "Checksum MD5 file macchina remota: $md52"
 							DEBUG "Hostname macchina locale: $hostname1"
 							DEBUG "Hostname macchina remota: $hostname2"
+							
+							(( n_files1++ ))
+                                                        (( n_files2++ ))
 
 							if [ "$el2f1" = "$el2f2" ] && [ "$md51" = "$md52" ] ; then
-								: # file uguali, non fare niente
+								# file uguali, non fare niente
+								(( n_eqfiles1++ ))
+                                                                (( n_eqfiles2++ ))
 							else
 								# file diversi, visualizza le informazioni
 								if [ "$outformat" = "html" ] ; then
@@ -274,6 +289,7 @@ function printdiffs(){
 
 							if [ "${machine}" = "$curr_hostname" ] ; then
 								# se la macchina corrisponde alla macchina locale...
+								(( n_files1++ ))
 
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 1"
@@ -319,7 +335,7 @@ function printdiffs(){
 								fi
 							else
 								# il file risiede sulla macchina remota
-
+								(( n_files2++ ))
 								if [ "$boold" = true ] ; then
 									echo "Appartiene macchina 2"
 								fi
@@ -365,7 +381,7 @@ function printdiffs(){
 
 							if [ "$outformat" = "echo" ] ; then
                                                         	printf "\n==========================================================================================================\n\n"
-                                                	fi
+                                                        fi
 						fi
 					else
 						skip=false # la prossima riga non deve essere saltata
@@ -379,7 +395,15 @@ function printdiffs(){
 
 			if [ "$outformat" = "html" ] ; then
 				printf "</div> \n </body> \n </html>"
-			fi
+			else
+				if [ "$hostname1" = "$curr_hostname" ] ; then
+					echo_stats "$hostname1" "$n_files1" "$n_eqfiles1" "$hostname2" "( $(( $n_eqfiles1 * 100 / $n_files1 )) % uguali )"
+                 			echo_stats "$hostname2" "$n_files2" "$n_eqfiles2" "$hostname1" "( $(( $n_eqfiles2 * 100 / $n_files2 )) % uguali )"
+				else
+                                        echo_stats "$hostname2" "$n_files1" "$n_eqfiles1" "$hostname1" "( $(( $n_eqfiles1 * 100 / $n_files1 )) % uguali )"
+                                        echo_stats "$hostname1" "$n_files2" "$n_eqfiles2" "$hostname2" "( $(( $n_eqfiles2 * 100 / $n_files2 )) % uguali )"
+				fi
+                   	fi
 		else
 			echo "File in input non esistenti"
 			exit 17
