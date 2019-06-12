@@ -80,12 +80,12 @@ if [ "$configfile" != "" ] ; then
 	
 	else
 		echo "File di configurazione non esiste"
-		exit 2
+		exit 10
 	fi
 	
 else
 	echo "Parametro file di configurazione mancante"
-	exit 1
+	exit 11
 fi
 
 # ================================================ GESTIONE CONFIGURAZIONI ================================================
@@ -101,9 +101,8 @@ fi
 # verra' solo visualizzato
 
 if [ "${#analize_paths[@]}" -eq 0 ] ; then
-	echo -e "\n${analize_paths[*]}"
 	echo "Nessun percorso da analizzare"
-	exit 3
+	exit 12
 fi
 
 if [ "${logpath}" = "" ] ; then
@@ -115,7 +114,7 @@ fi
 
 if [ "${ip}" = "" ] ; then
         echo "Manca l'indirizzo IP della macchina a cui connettersi"
-        exit 4
+        exit 13
 fi
 
 if [ "${user}" = "" ] ; then

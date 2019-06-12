@@ -136,22 +136,22 @@ SCRIPTENTRY
 
 # copio script sul server remoto
 cmd=( scp -r "$SCRIPTPATH" "${user}@${ip}:${scp_path}" )
-checksuccess 5 "Copia script su server remoto" "${cmd[@]}"
+checksuccess 20 "Copia script su server remoto" "${cmd[@]}"
 
 # salvo file di configurazione sul server remoto
 cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/" )
-checksuccess 6 "Copia file di configurazione sul server remoto" "${cmd[@]}"
+checksuccess 21 "Copia file di configurazione sul server remoto" "${cmd[@]}"
 
 # ottengo lista file su questo pc, identificandoli con l'hostname della macchina locale
 curr_hostname=$( hostname )
 cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" "$curr_hostname" )
-checksuccess 7 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
+checksuccess 22 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
 
 # ottengo lista file su server remoto, identificandoli con l'hostname della macchina remota
 inifilename=$( basename "$configfile" ) # recupero nome file di configurazione
 cmd=( ssh "${user}@${ip}" "rem_hostname=\$( hostname ) ; ${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" '"$rem_hostname"' )
 
-checksuccess 8 "Operazione lista file macchina remota" "${cmd[@]}"
+checksuccess 23 "Operazione lista file macchina remota" "${cmd[@]}"
 
 # recupero log del computer remoto
 cmd=( ssh "${user}@${ip}" "cat '$logpath'" )
@@ -160,11 +160,11 @@ while IFS= read -r line
 # scorri log
 do
 	echo "$line" >> "$logpath" # inserisco nel file di log le righe del file di log remoto
-done < <( checksuccess 16 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
+done < <( checksuccess 24 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
 
 # rimuovo log incompleto remoto
 cmd=( ssh "${user}@${ip}" "rm '$logpath'" )
-checksuccess 17 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
+checksuccess 25 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
 
 # eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
 if [ "$boold" = true ] ; then
@@ -181,7 +181,7 @@ DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
 if [ "$status_code" -ne 0 ] ; then
 	# se l'operazione NON ha avuto successo, esci con status code 9
 	echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
-    exit 9
+    exit 26
 fi
 
 # visualizza le informazioni ricavate
@@ -201,6 +201,6 @@ else
 	cmd=( printdiffs "$diffout_path" )
 fi
 
-checksuccess 11 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
+checksuccess 27 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
 
 SCRIPTEXIT

@@ -406,11 +406,11 @@ function printdiffs(){
                    	fi
 		else
 			echo "File in input non esistenti"
-			exit 17
+			exit 40
 		fi
 	else
 		echo "Numero parametri errato"
 	        echo "printdiffs.sh <filepath> [<output format>]"
-		exit 16
+		exit 41
 	fi
 }
