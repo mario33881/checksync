@@ -14,11 +14,10 @@
 if [ "$SCRIPT_LOG" = "" ] ; then
 	# se il percorso del file di log non e' definito esci
 	# con status code 14
-	echo "Output log non definito"
+	echo "Output log non definito ( variabile SCRIPT_LOG )"
 	exit 30
 fi
 
-mkdir -p "$(dirname "$SCRIPT_LOG")" # crea cartelle per il log (se non esiste)
 touch "$SCRIPT_LOG" # crea file log se non esiste
 
 

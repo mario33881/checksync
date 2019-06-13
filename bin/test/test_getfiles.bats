@@ -26,6 +26,16 @@ extract_pathnhostname(){
 }
 
 
+setup(){
+    mkdir -p "/var/tmp/checksync/bats-tests/"
+}
+
+
+teardown(){
+    rm -r "/var/tmp/checksync/bats-tests/"
+}
+
+
 @test "getfiles.sh file configurazione senza percorsi da ignorare" {
     # vengono rilevati tutti i file in getfiles_testing/
     run "$BATS_TEST_DIRNAME/../utils/getfiles.sh" "$BATS_TEST_DIRNAME/getfiles_testing/configs/confignoinora.ini" "batstesting-hostname" "--skip-conn-test"
