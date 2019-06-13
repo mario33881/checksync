@@ -239,7 +239,8 @@ if [ "$testingflag" = "" ] ; then
     DEBUG "Percorso output lista file: '$getfiles_path'"
     DEBUG "Percorso output lista con file diversi tra le due macchine: '$diffout_path'"
     DEBUG "Indirizzo email: '$email'"
-else
+
+elif [ "$testingflag" = "--test" ] ; then
     echo "Analizza: '${analize_paths[*]}'"
     echo "Ignora: '${toignore_paths[*]}'"
     echo "Log: '$logpath'"
@@ -251,15 +252,18 @@ else
     echo "Sendemail: '$send_email'"
 fi
 
-if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
-    # il controllo fallo solo se sei sulla macchina locale
-    if ! ping -c 1 "$ip" > /dev/null ; then
-        echo "$ip non rangiungibile"
-        exit 17
-    fi
+if [ "$testingflag" != "--skip-conn-test" ] ; then
+	# flag permette di evitare questo controllo
+	if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
+	    # il controllo fallo solo se sei sulla macchina locale
+	    if ! ping -c 1 "$ip" > /dev/null ; then
+	        echo "$ip non rangiungibile"
+	        exit 17
+	    fi
 
-    if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
-            echo "Cartella remota in cui copiare lo script non esiste"
-            exit 16
-    fi
+	    if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
+	            echo "Cartella remota in cui copiare lo script non esiste"
+	            exit 16
+	    fi
+	fi
 fi

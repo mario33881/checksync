@@ -95,7 +95,7 @@ load 'libs/bats-assert/load'
     #Email: ''                                      ; non definita nel file di configurazione
     #Sendemail: 'false'                             ; false perche' email non definita
 
-    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/correctipv4.ini" "batstesting-hostname" "testing"
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/correctipv4.ini" "batstesting-hostname" "--test"
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: ''" ]
@@ -136,7 +136,7 @@ load 'libs/bats-assert/load'
     #Email: 'none'                   ; definito nella configurazione
     #Sendemail: 'false'              ; false perche' email = none
 
-    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/emailnone.ini" "batstesting-hostname" "testing"
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/emailnone.ini" "batstesting-hostname" "--test"
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
@@ -161,7 +161,7 @@ load 'libs/bats-assert/load'
     #Email: 'random@email.com'       ; definito nella configurazione
     #Sendemail: 'false'              ; true perche' email definita
 
-    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/completeconfig.ini" "batstesting-hostname" "testing"
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/completeconfig.ini" "batstesting-hostname" "--test"
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]

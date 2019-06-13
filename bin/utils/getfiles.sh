@@ -151,7 +151,7 @@ function getstatnmd5(){
 
     ENTRY
 
-    echo "size;last_mod;md5;macchina" > "${getfiles_path}"
+    echo "path;size;last_mod;md5;macchina" > "${getfiles_path}"
 
     while read -r line; do
         output=$( sudo -n stat "${line}" --format="%n;%Y;%s" 2> /dev/null )
