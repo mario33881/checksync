@@ -4,8 +4,9 @@ if [ "$boold" = "" ] ; then
     boold=false # variabile debug
 fi
 
-configfile="$1" # percorso file configurazione
-testingflag="$3"
+configfile="$1"  # percorso file configurazione
+testingflag="$3" # flag di test (--test per visualizzare contenuto configurazioni, 
+                 # --skip-conn-test per saltare il test di connessione)
 
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )" # percorso questo script
 
@@ -70,7 +71,7 @@ if [ "$configfile" != "" ] ; then
                 # se la configurazione e' nella sezione ignora...
                 path="${line:8}"
                 path="$( stripspaces "$path" )" # rimuovi eventuali spazi prima e dopo il percorso
-                           toignore_paths+=("${path}") # aggiungi percorso al vettore
+                toignore_paths+=("${path}") # aggiungi percorso al vettore
     
             elif [[ "$line" = "[LOG]path = "* ]] ; then
                 # se la configurazione e' nella sezione log, proprieta' path
@@ -83,28 +84,28 @@ if [ "$configfile" != "" ] ; then
                 ip="$( stripspaces "$ip" )" # rimuovi eventuali spazi prima e dopo
 
             elif [[ "$line" = "[MACCHINA 2]user = "* ]] ; then
-                        # se la configurazione e' nella sezione macchina 2, proprieta' user
-                        user="${line:19}" # salva username
+                # se la configurazione e' nella sezione macchina 2, proprieta' user
+                user="${line:19}" # salva username
                 user="$( stripspaces "$user" )" # rimuovi eventuali spazi prima e dopo
     
             elif [[ "$line" = "[MACCHINA 2]scppath = "* ]] ; then
-                        # se la configurazione e' nella sezione macchina 2, proprieta' scppath
-                        scp_path="${line:22}" # salva scp path
+                # se la configurazione e' nella sezione macchina 2, proprieta' scppath
+                scp_path="${line:22}" # salva scp path
                 scp_path="$( stripspaces "$scp_path" )" # rimuovi eventuali spazi prima e dopo
             
             elif [[ "$line" = "[OUTPUT]getfiles = "* ]] ; then
-                        # se la configurazione e' nella sezione output, proprieta' getfiles
-                        getfiles_path="${line:19}" # salva percorso output getfiles
+                # se la configurazione e' nella sezione output, proprieta' getfiles
+                getfiles_path="${line:19}" # salva percorso output getfiles
                 getfiles_path="$( stripspaces "$getfiles_path" )" # rimuovi eventuali spazi prima e dopo
 
             elif [[ "$line" = "[OUTPUT]diffout = "* ]] ; then
-                        # se la configurazione e' nella sezione output, proprieta' diffout
-                        diffout_path="${line:18}" # salva percorso output diffout
+                # se la configurazione e' nella sezione output, proprieta' diffout
+                diffout_path="${line:18}" # salva percorso output diffout
                 diffout_path="$( stripspaces "$diffout_path" )" # rimuovi eventuali spazi prima e dopo
             
             elif [[ "$line" = "[NOTIFICHE]email = "* ]] ; then
-                                # se la configurazione e' nella sezione notifiche, proprieta' email
-                                email="${line:19}" # salva indirizzo email
+                # se la configurazione e' nella sezione notifiche, proprieta' email
+                email="${line:19}" # salva indirizzo email
                 email="$( stripspaces "$email" )" # rimuovi eventuali spazi prima e dopo
             fi
         
@@ -160,7 +161,7 @@ fi
 
 if [ "${logpath}" = "" ] ; then
     if [ "$boold" = true ] ; then
-            echo "Verra' usato percorso log di default"
+        echo "Verra' usato percorso log di default"
     fi
     
     logpath=checksync.log # se non ci sono altre possibilita' metti log nella cartella di esecuzione
@@ -174,8 +175,8 @@ if [ "${logpath}" = "" ] ; then
 fi
 
 if [ "${ip}" = "" ] ; then
-        echo "Manca l'indirizzo IP della macchina a cui connettersi"
-        exit 13
+    echo "Manca l'indirizzo IP della macchina a cui connettersi"
+    exit 13
 
 else
     if valid_ipv6 "$ip" || valid_ipv4 "$ip" ; then
@@ -188,30 +189,30 @@ else
 fi
 
 if [ "${user}" = "" ] ; then
-        if [ "$boold" = true ] ; then
-                echo "Verra' usato l'attuale nome utente per la connessione ssh"
+    if [ "$boold" = true ] ; then
+        echo "Verra' usato l'attuale nome utente per la connessione ssh"
     fi
-        user=$(whoami)
+    user=$(whoami)
 fi
 
 if [ "${scp_path}" = "" ] ; then
-        if [ "$boold" = true ] ; then
-                echo "Verra' usato l'attuale percorso per copiare lo script in remoto"
-        fi
+    if [ "$boold" = true ] ; then
+        echo "Verra' usato l'attuale percorso per copiare lo script in remoto"
+    fi
     scp_path="$SCRIPTPATH"
 fi
 
 if [ "${getfiles_path}" = "" ] ; then
-        if [ "$boold" = true ] ; then
-                echo "Verra' usato un percorso temporaneo per il file con tutte le informazioni relative ai file sul computer"
+    if [ "$boold" = true ] ; then
+        echo "Verra' usato un percorso temporaneo per il file con tutte le informazioni relative ai file sul computer"
     fi
     getfiles_path="/var/tmp/checksync/getfilesout.csv"
 fi
 
 if [ "${diffout_path}" = "" ] ; then
-        if [ "$boold" = true ] ; then
-                echo "Verra' usato un percorso temporaneo per il file differenza tra i due getfiles"
-        fi
+    if [ "$boold" = true ] ; then
+        echo "Verra' usato un percorso temporaneo per il file differenza tra i due getfiles"
+    fi
     diffout_path="/var/tmp/checksync/diffout.csv"
 fi
 
@@ -253,17 +254,17 @@ elif [ "$testingflag" = "--test" ] ; then
 fi
 
 if [ "$testingflag" != "--skip-conn-test" ] ; then
-	# flag permette di evitare questo controllo
-	if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
-	    # il controllo fallo solo se sei sulla macchina locale
-	    if ! ping -c 1 "$ip" > /dev/null ; then
-	        echo "$ip non rangiungibile"
-	        exit 17
-	    fi
+    # flag permette di evitare questo controllo
+    if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
+        # il controllo fallo solo se sei sulla macchina locale
+        if ! ping -c 1 "$ip" > /dev/null ; then
+            echo "$ip non rangiungibile"
+            exit 17
+        fi
 
-	    if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
-	            echo "Cartella remota in cui copiare lo script non esiste"
-	            exit 16
-	    fi
-	fi
+        if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
+            echo "Cartella remota in cui copiare lo script non esiste"
+            exit 16
+        fi
+    fi
 fi

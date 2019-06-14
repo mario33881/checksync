@@ -28,7 +28,7 @@
 
 boold=false
 SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )"  # percorso questo script
-SCRIPTDIR=$( basename "$SCRIPTPATH" )            # nome cartella in cui risiede questo script
+SCRIPTDIR=$( basename "$SCRIPTPATH" )                    # nome cartella in cui risiede questo script
 
 output_flag="$2" # flag di output ( -e = echo , -em o -me = mail e echo, -m = mail )
 
@@ -96,10 +96,10 @@ function checksuccess(){
     fi
     
     if [ "$status_code" -ne 0 ] ; then
-            # se l'operazione NON ha avuto successo, esci con status code $exitcode
-            echo "$desc FALLITA (status code $status_code )"
+        # se l'operazione NON ha avuto successo, esci con status code $exitcode
+        echo "$desc FALLITA (status code $status_code )"
         ERROR "$desc FALLITA (status code $status_code )"
-            exit "$exitcode"
+        exit "$exitcode"
     fi
 
     EXIT
@@ -111,22 +111,22 @@ function email_sender(){
     
     sendmail_path=$( command -v sendmail ) # verifico se sendmail e' installato ( se != "" )
     if [ "$sendmail_path" != "" ] && "$send_email" ; then
-            if [ "$boold" = true ] ; then
-                    echo "Sendmail e' installato ed e' stata specificata email di destinazione"
-            fi
+        if [ "$boold" = true ] ; then
+            echo "Sendmail e' installato ed e' stata specificata email di destinazione"
+        fi
 
-            data=$( date +"%F %T" ) # data "yyyy/mm/dd hh:mm:ss"
+        data=$( date +"%F %T" ) # data "yyyy/mm/dd hh:mm:ss"
 
-            htmlmessage=$( printdiffs "$diffout_path" "html" ) # ottieni html con tutte le informazioni
-            (
-            echo "From: checksyncscript@bashscript.com"; # mail mittente
-            echo "To: ${email}";                         # mail destinatario ( da file di configurazione )
-            echo "Subject:Checksinc report ${data}";     # oggetto della mail
-            echo "Content-Type: text/html";              # il contenuto mail e' tipo html
-            echo "MIME-Version: 1.0";
-            echo "";
-            echo "$htmlmessage"; # messaggio (html)
-            ) | sendmail -t # usa sendmail per mandare la mail
+        htmlmessage=$( printdiffs "$diffout_path" "html" ) # ottieni html con tutte le informazioni
+        (
+        echo "From: checksyncscript@bashscript.com"; # mail mittente
+        echo "To: ${email}";                         # mail destinatario ( da file di configurazione )
+        echo "Subject:Checksinc report ${data}";     # oggetto della mail
+        echo "Content-Type: text/html";              # il contenuto mail e' tipo html
+        echo "MIME-Version: 1.0";
+        echo "";
+        echo "$htmlmessage"; # messaggio (html)
+        ) | sendmail -t      # usa sendmail per mandare la mail
 
     fi
 }

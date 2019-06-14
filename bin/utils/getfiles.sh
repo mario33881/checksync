@@ -133,7 +133,7 @@ function findtree(){
     sudo -n "${command[@]}" 2> /dev/null 1> "$fileoutfind"
 
     if [ "$?" -ne 0 ] ; then
-            INFO "Impossibile eseguire seguente find con sudo: '${command[*]}'"
+        INFO "Impossibile eseguire seguente find con sudo: '${command[*]}'"
         "${command[@]}" > "$fileoutfind"
     fi
 
@@ -170,7 +170,7 @@ function getstatnmd5(){
         md5=$( sudo -n md5sum "$path" 2> /dev/null | awk '{ print $1 }' )
         
         if [ "$?" -ne 0 ] ; then
-                    INFO "Impossibile eseguire il comando md5sum con sudo su: '$path'"
+            INFO "Impossibile eseguire il comando md5sum con sudo su: '$path'"
             md5=$( md5sum "$path" | awk '{ print $1 }' )
         fi
 

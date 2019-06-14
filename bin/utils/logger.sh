@@ -12,10 +12,10 @@
 # ERROR       : messaggio errore
 
 if [ "$SCRIPT_LOG" = "" ] ; then
-	# se il percorso del file di log non e' definito esci
-	# con status code 14
-	echo "Output log non definito ( variabile SCRIPT_LOG )"
-	exit 30
+    # se il percorso del file di log non e' definito esci
+    # con status code 14
+    echo "Output log non definito ( variabile SCRIPT_LOG )"
+    exit 30
 fi
 
 touch "$SCRIPT_LOG" # crea file log se non esiste

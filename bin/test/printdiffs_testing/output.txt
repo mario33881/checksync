@@ -482,5 +482,5 @@ File presente SOLO su imx6-dev
 
 ==========================================================================================================
 
-Sul server DESKTOP-JO943NR sono stati analizzati 23 file di cui 18 sono presenti sul server imx6-dev ( 78 % uguali )
-Sul server imx6-dev sono stati analizzati 59 file di cui 18 sono presenti sul server DESKTOP-JO943NR ( 30 % uguali )
+Sul server DESKTOP-JO943NR sono stati analizzati 23 file di cui 20 sono presenti sul server imx6-dev ( di cui 18 file, il 78 %, sono uguali )
+Sul server imx6-dev sono stati analizzati 59 file di cui 20 sono presenti sul server DESKTOP-JO943NR ( di cui 18 file, il 30 %, sono uguali )
