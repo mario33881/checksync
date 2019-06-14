@@ -114,6 +114,8 @@ load 'libs/bats-assert/load'
     run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/unreachableip.ini"
     [ "$status" -eq 17 ]
     [[ "$output" = *" non rangiungibile" ]]
+
+    rm "$BATS_TEST_DIRNAME/checksync.log"
 }
 
 
@@ -122,6 +124,8 @@ load 'libs/bats-assert/load'
     run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/wrongscppath.ini"
     [ "$status" -eq 16 ]
     [ "$output" = "Cartella remota in cui copiare lo script non esiste" ]
+    
+    rm "$BATS_TEST_DIRNAME/checksync.log"
 }
 
 
@@ -140,7 +144,7 @@ load 'libs/bats-assert/load'
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
-    [ "${lines[2]}" = "Log: 'customlog.txt'" ]
+    [ "${lines[2]}" = "Log: '/var/tmp/checksync/bats-test/customlog.txt'" ]
     [ "${lines[3]}" = "User: 'customuser'" ]
     [ "${lines[4]}" = "Scp: 'custompath'" ]
     [ "${lines[5]}" = "Getfiles: 'getfiles_output.csv'" ]
@@ -165,7 +169,7 @@ load 'libs/bats-assert/load'
     # ignoro status perche' potrebbe non trovare scp_path remoto
     [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
     [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
-    [ "${lines[2]}" = "Log: 'customlog.txt'" ]
+    [ "${lines[2]}" = "Log: '/var/tmp/checksync/bats-test/customlog.txt'" ]
     [ "${lines[3]}" = "User: 'customuser'" ]
     [ "${lines[4]}" = "Scp: 'custompath'" ]
     [ "${lines[5]}" = "Getfiles: 'getfiles_output.csv'" ]

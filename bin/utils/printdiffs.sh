@@ -30,7 +30,13 @@ fi
 
 
 function bytesToHuman() {
-    # converte byte in multiplo ' piu' leggibile
+    # converte parametro byte in multiplo piu' leggibile  ( se il parametro e' numero e >= 0 )
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]] ; then
+        echo "Il parametro passato non e' un numero o non e' valido ( >= 0 )"
+        return 42
+    fi
+
     b=${1:-0}; d=''; s=0; S=(Bytes {K,M,G,T,P,E,Z,Y}iB)
     while ((b > 1024)); do
         d="$(printf ".%02d" $((b % 1024 * 100 / 1024)))"
@@ -46,7 +52,36 @@ function get_csvelement() {
     # l'elemento nella posizione passata come secondo parametro
     line="$1"
     n_el="$2"
+    re='^[0-9]+$'
+
+    # conto quanti separatori sono presenti nella stringa
+    char=";"
+    n_dels=$( awk -F"${char}" '{print NF-1}' <<< "${line}" )
+
+    # controllo dei parametri
+    if [ "$line" = "" ] ; then
+        # se la stringa e' vuota esci con status code 44
+        echo "Primo parametro stringa in formato csv vuoto"
+        return 44
+
+    elif ! [[ "$n_el" =~ $re ]] ; then
+        # se il parametro indice non e' un numero esci con status code 43
+        echo "Il parametro index passato non e' un numero o non e' valido ( > 0 )"
+        return 43
+    fi
+
     el=$( echo "$line" | awk -F "\"*;\"*" "{print \$$n_el}" )
+
+    if [ "$n_el" -gt "$(( $n_dels+1 ))" ] ; then
+        # se l'indice e' maggiore del numero dei delimitatori + 1, ho "out of range"
+        echo "Parametro index troppo grande"
+        return 45
+
+    elif [ "$el" = "$line" ] ; then
+        echo "Il primo parametro non contiene delimitatori o parametro index 0"
+        return 46
+    fi
+
     echo "$el"
 }
 
@@ -89,7 +124,7 @@ function printtable(){
     # riga dimensione file
     printf '<tr style="%s"> \n' "$evenrow_style"
         printf '<td style="%s">Dimensione file:</td> \n' "$td_styles"
-        printf '<td style="%s"> %s </td>' "$td_styles" "$size"
+        printf '<td style="%s"> %s </td> \n' "$td_styles" "$size"
          printf '</tr> \n'
     
     # riga data ultima modifica
@@ -153,6 +188,8 @@ function printdiffs(){
     n_files2=0
     n_eqfiles1=0
     n_eqfiles2=0
+
+    #declare -F
 
     if [ "$outformat" = "html" ] ; then
         printf '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
@@ -231,18 +268,20 @@ function printdiffs(){
                             # hostname macchina remota
                                                         hostname2=$( get_csvelement "$line" 5 )
                             
-                            DEBUG "Informazioni ricavate del file: $$oldpath"
+                            if declare -f "DEBUG" > /dev/null ; then
+                                DEBUG "Informazioni ricavate del file: $$oldpath"
                                 DEBUG "Dimensione file macchina locale: $size1"
-                                                        DEBUG "Dimensione file macchina remota: $size2"
-                                                        DEBUG "Data ultima modifica file macchina locale: $last_mod1"
-                                                        DEBUG "Data ultima modifica file macchina remota: $last_mod2"
-                                                        DEBUG "Checksum MD5 file macchina locale: $md51"
-                                                        DEBUG "Checksum MD5 file macchina remota: $md52"
-                            DEBUG "Hostname macchina locale: $hostname1"
-                            DEBUG "Hostname macchina remota: $hostname2"
-                            
+                                DEBUG "Dimensione file macchina remota: $size2"
+                                DEBUG "Data ultima modifica file macchina locale: $last_mod1"
+                                DEBUG "Data ultima modifica file macchina remota: $last_mod2"
+                                DEBUG "Checksum MD5 file macchina locale: $md51"
+                                DEBUG "Checksum MD5 file macchina remota: $md52"
+                                DEBUG "Hostname macchina locale: $hostname1"
+                                DEBUG "Hostname macchina remota: $hostname2"
+                            fi
+
                             (( n_files1++ ))
-                                                        (( n_files2++ ))
+                            (( n_files2++ ))
 
                             if [ "$el2f1" = "$el2f2" ] && [ "$md51" = "$md52" ] ; then
                                 # file uguali, non fare niente
@@ -285,7 +324,10 @@ function printdiffs(){
                             fi
                             
                             machine=$( get_csvelement "$oldline" 5 ) # macchina contente il file
-                            DEBUG "Informazioni ricavate del file: $oldpath"
+                            
+                            if declare -f "DEBUG" > /dev/null ; then
+                                DEBUG "Informazioni ricavate del file: $oldpath"
+                            fi
 
                             if [ "${machine}" = "$curr_hostname" ] ; then
                                 # se la macchina corrisponde alla macchina locale...
@@ -311,11 +353,12 @@ function printdiffs(){
                                 
                                 # hostname macchina locale
                                                                hostname1=$( get_csvelement "$oldline" 5 )
-
-                                DEBUG "Dimensione file macchina locale: $size1"
-                                DEBUG "Data ultima modifica file macchina locale: $last_mod1"
-                                DEBUG "Checksum MD5 file macchina locale: $md51"
-                                DEBUG "Hostname macchina locale: $hostname1"
+                                if declare -f "DEBUG" > /dev/null ; then
+                                    DEBUG "Dimensione file macchina locale: $size1"
+                                    DEBUG "Data ultima modifica file macchina locale: $last_mod1"
+                                    DEBUG "Checksum MD5 file macchina locale: $md51"
+                                    DEBUG "Hostname macchina locale: $hostname1"
+                                fi
 
                                 if [ "$outformat" = "html" ] ; then
                                     # header sezione con tutti i file
@@ -356,10 +399,12 @@ function printdiffs(){
                                 # hostname macchina remota
                                                                 hostname2=$( get_csvelement "$oldline" 5 )
 
-                                                            DEBUG "Dimensione file macchina fisica: $size2"
-                                                            DEBUG "Data ultima modifica file macchina fisica: $last_mod2"
-                                                            DEBUG "Checksum MD5 file macchina fisica: $md52"
-                                DEBUG "Hostname macchina remota: $hostname2"
+                                if declare -f "DEBUG" > /dev/null ; then
+                                    DEBUG "Dimensione file macchina fisica: $size2"
+                                    DEBUG "Data ultima modifica file macchina fisica: $last_mod2"
+                                    DEBUG "Checksum MD5 file macchina fisica: $md52"
+                                    DEBUG "Hostname macchina remota: $hostname2"
+                                fi
 
                                 if [ "$outformat" = "html" ] ; then
                                     # header sezione con tutti i file
