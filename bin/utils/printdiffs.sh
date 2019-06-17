@@ -154,6 +154,11 @@ function echo_stats(){
 }
 
 
+function html_stats(){
+    printf "<h4 style='%s'> %s </h4>" "padding: 8px;color: white; text-align:center;" "$( echo_stats "$1" "$2" "$3" "$4" "$5" )"
+}
+
+
 function printdiffs(){
     # funzione che si occupa della visualizzazione delle informazioni
     #
@@ -443,6 +448,13 @@ function printdiffs(){
             done < "$diffile" # file da leggere (output comando cat)
 
             if [ "$outformat" = "html" ] ; then
+                if [ "$hostname1" = "$curr_hostname" ] ; then
+                    html_stats "$hostname1" "$n_files1" "$(( $n_eqfiles + $n_difffiles ))" "$hostname2" "( di cui $n_eqfiles file, il $(( $n_eqfiles * 100 / $n_files1 )) %, sono uguali )"
+                    html_stats "$hostname2" "$n_files2" "$(( $n_eqfiles + $n_difffiles ))" "$hostname1" "( di cui $n_eqfiles file, il $(( $n_eqfiles * 100 / $n_files2 )) %, sono uguali )"
+                else
+                    html_stats "$hostname2" "$n_files1" "$(( $n_eqfiles + $n_difffiles ))" "$hostname1" "( di cui $n_eqfiles file, il $(( $n_eqfiles * 100 / $n_files1 )) %, sono uguali )"
+                    html_stats "$hostname1" "$n_files2" "$(( $n_eqfiles + $n_difffiles ))" "$hostname2" "( di cui $n_eqfiles file, il $(( $n_eqfiles * 100 / $n_files2 )) %, sono uguali )"
+                fi
                 printf "</div> \n </body> \n </html>"
             else
                 # per capire dove quali statistiche riguardano quale macchina bisogna ricorre a questo controllo
