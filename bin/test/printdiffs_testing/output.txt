@@ -1,0 +1,486 @@
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/coder.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          842 Bytes 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/colors.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           1.35 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/delegates.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          13.63 KiB 
+                  Ultima modifica:                2018-09-28 21:30:23 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/log.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          956 Bytes 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/magic.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          888 Bytes 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/mime.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                         131.02 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/policy.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           3.10 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/quantization-table.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           2.04 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/thresholds.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          11.03 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/type-dejavu.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           8.35 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/type-ghostscript.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           9.49 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/type-windows.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          13.33 KiB 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/ImageMagick-6/type.xml
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          671 Bytes 
+                  Ultima modifica:                2018-09-28 21:29:52 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su DESKTOP-JO943NR
+/etc/NetworkManager/dispatcher.d/hook-network-manager
+
+                                                      DESKTOP-JO943NR 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          719 Bytes 
+                  Ultima modifica:                2019-03-08 23:37:05 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente su entrambe le macchine (imx6-dev e DESKTOP-JO943NR)
+/etc/X11/Xsession.d/60x11-common_xdg_path
+
+                                                             imx6-dev                    DESKTOP-JO943NR 
+---------------------------------- ---------------------------------- ----------------------------------
+                  Dimensione file:                          768 Bytes                          991 Bytes 
+                  Ultima modifica:                2016-03-04 15:49:10                2018-06-21 12:48:13 
+                     Checksum MD5:                                                                       
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/Xsession.d/60xdg-user-dirs-update
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           80 Bytes 
+                  Ultima modifica:                2016-04-14 07:45:18 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/Xsession.d/65snappy
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          435 Bytes 
+                  Ultima modifica:                2016-11-24 10:36:04 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/Xsession.d/70gconfd_path-on-session
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          336 Bytes 
+                  Ultima modifica:                2015-06-11 03:51:24 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/Xsession.d/75dbus_dbus-launch
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          406 Bytes 
+                  Ultima modifica:                2015-12-02 05:42:14 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su DESKTOP-JO943NR
+/etc/X11/Xsession.d/90gpg-agent
+
+                                                      DESKTOP-JO943NR 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          880 Bytes 
+                  Ultima modifica:                2017-12-01 00:42:42 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente su entrambe le macchine (imx6-dev e DESKTOP-JO943NR)
+/etc/X11/Xsession.d/90qt-a11y
+
+                                                             imx6-dev                    DESKTOP-JO943NR 
+---------------------------------- ---------------------------------- ----------------------------------
+                  Dimensione file:                          257 Bytes                          368 Bytes 
+                  Ultima modifica:                2016-02-25 02:14:16                2018-03-13 02:02:24 
+                     Checksum MD5:                                                                       
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/Xsession.d/95dbus_update-activation-env
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          513 Bytes 
+                  Ultima modifica:                2015-12-02 05:42:14 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Editres-color
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           2.68 KiB 
+                  Ultima modifica:                2015-05-06 15:19:47 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Editres
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           9.64 KiB 
+                  Ultima modifica:                2015-05-06 15:19:47 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Viewres-color
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          973 Bytes 
+                  Ultima modifica:                2015-05-06 15:19:47 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Viewres
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           3.10 KiB 
+                  Ultima modifica:                2015-05-06 15:19:47 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/XFontSel
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           4.66 KiB 
+                  Ultima modifica:                2015-05-06 15:19:48 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Xfd
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          754 Bytes 
+                  Ultima modifica:                2015-05-06 15:19:48 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Xmessage-color
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          920 Bytes 
+                  Ultima modifica:                2015-05-06 15:19:50 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/X11/app-defaults/Xmessage
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          248 Bytes 
+                  Ultima modifica:                2015-05-06 15:19:50 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/acpi/events/powerbtn
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          423 Bytes 
+                  Ultima modifica:                2016-02-09 23:43:25 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/acpi/powerbtn.sh
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           2.36 KiB 
+                  Ultima modifica:                2016-02-09 23:43:25 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su DESKTOP-JO943NR
+/etc/aliases
+
+                                                      DESKTOP-JO943NR 
+---------------------------------- ----------------------------------
+                  Dimensione file:                            0 Bytes 
+                  Ultima modifica:                2019-06-05 12:42:23 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/apache2.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           6.94 KiB 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/charset.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          315 Bytes 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/javascript-common.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          127 Bytes 
+                  Ultima modifica:                2013-08-11 10:18:45 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/localized-error-pages.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           3.14 KiB 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/other-vhosts-access-log.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          189 Bytes 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/security.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           2.12 KiB 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/conf-available/serve-cgi-bin.conf
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          455 Bytes 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/envvars
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                           1.74 KiB 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/apache2/magic
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                          30.33 KiB 
+                  Ultima modifica:                2016-03-19 10:48:35 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/.java/.systemPrefs/.systemRootModFile
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                            0 Bytes 
+                  Ultima modifica:                2017-10-05 16:00:02 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+File presente SOLO su imx6-dev
+/etc/.java/.systemPrefs/.system.lock
+
+                                                             imx6-dev 
+---------------------------------- ----------------------------------
+                  Dimensione file:                            0 Bytes 
+                  Ultima modifica:                2017-10-05 16:00:02 
+                     Checksum MD5:                                    
+
+==========================================================================================================
+
+Sul server DESKTOP-JO943NR sono stati analizzati 23 file di cui 20 sono presenti sul server imx6-dev ( di cui 18 file, il 78 %, sono uguali )
+Sul server imx6-dev sono stati analizzati 59 file di cui 20 sono presenti sul server DESKTOP-JO943NR ( di cui 18 file, il 30 %, sono uguali )

@@ -9,6 +9,7 @@ Questo script **controlla se due macchine sono sincronizzate** (hanno gli stessi
 * <a href="#descrizione-breve-">Descrizione breve</a>
 * <a href="#descrizione-dettagliata-">Descrizione dettagliata</a>
 * <a href="#esecuzione-script">Esecuzione script</a>
+* <a href="#status-code">Status code</a>
 * <a href="#contenuto-archivio-">Contenuto archivio</a>
 * <a href="#changelog-">Changelog</a>
 * <a href="#autore-">Autore</a>
@@ -19,12 +20,12 @@ Il programma verifica se **due server sono sincronizzati** (quindi se i file pre
 
 Per fare questo vengono utilizzati **diversi script**:
 > I programmi sono descritti in **ordine di esecuzione**
-* ```checksync.sh```: e' il **programma principale**, si occupa di **copiare in remoto**, di **avviare** e di **far interagire gli altri script** 
-* ```utils/configs.sh``` : richiede un **parametro obbligatorio** ( passato attraverso checksync.sh ), il percorso valido di un **file di configurazione**. 
-Questo script **estrae le configurazioni e le gestisce** 
+* ```checksync.sh```: e' il **programma principale**, si occupa di **copiare in remoto**, di **avviare** e di **far interagire gli altri script**
+* ```utils/configs.sh``` : richiede un **parametro obbligatorio** ( passato attraverso checksync.sh ), il percorso valido di un **file di configurazione**.
+Questo script **estrae le configurazioni e le gestisce**
 * ```utils/logger.sh``` : si occupa di **creare la cartella contenente i log** e di **scrivere i log**
-* ```utils/getfiles.sh``` : si occupa di **recuperare tutti i percorsi di tutti i file**, 
-dando in **output un file** con solo i **percorsi dei file**, piu' la loro **dimensione**, la **data di ultima modifica**, il **checksum MD5** e l'**hostname** della loro macchina. 
+* ```utils/getfiles.sh``` : si occupa di **recuperare tutti i percorsi di tutti i file**,
+dando in **output un file** con solo i **percorsi dei file**, piu' la loro **dimensione**, la **data di ultima modifica**, il **checksum MD5** e l'**hostname** della loro macchina.
 Questo script **viene eseguito due volte, in locale e in remoto**, e dai due output ricavati **viene ricavato un terzo file** di output attraverso il comando cat
     > L'output di cat viene prima **ordinato in ordine alfabetico** per avere i percorsi ( / file ) uguali vicini
 
@@ -32,14 +33,16 @@ Questo script **viene eseguito due volte, in locale e in remoto**, e dai due out
 
     > Il **checksum MD5** viene ricavato dal comando **md5sum**
 
-    > Il **comando cat** permette di **unire il contenuto** dei due file in un file unico 
+    > Il **comando cat** permette di **unire il contenuto** dei due file in un file unico
 
-* ```utils/printdiffs.sh``` : contiene la funzione "printdiffs" che **si occupa di visualizzare** quali file sono presenti su un server, 
-su l'altro o su entrambe mostrando anche le informazioni precedentemente ricavate (dimensione, data ultima modifica e checksum MD5). 
+* ```utils/printdiffs.sh``` : contiene la funzione "printdiffs" che **si occupa di visualizzare** quali file sono presenti su un server,
+su l'altro o su entrambe mostrando anche le informazioni precedentemente ricavate (dimensione, data ultima modifica e checksum MD5).
 Questa funzione **richiede in input il file di output del comando cat**.
 
 > Questo script contiene anche la funzione ```bytesToHuman()``` per rendere la **dimensione in byte facilmente leggibile**
 e ```header_filesections()```, ```printtable()``` e ```divide_filesections()``` per **comporre l'html** da mandare via email
+
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
 
 ## Descrizione dettagliata ![](https://i.imgur.com/wMdaLI0.png)
 
@@ -66,7 +69,7 @@ la loro interpretazione.
     > Nota: e' possibile leggere piu' **informazioni relative al file di configurazione nella sezione**
     di questa documentazione **"Esecuzione script"**
 
-2. Poi checksync.sh si occupa di fare il **source dello script logger.sh** 
+2. Poi checksync.sh si occupa di fare il **source dello script logger.sh**
 La prima informazione del file di configurazione che viene usata e' il percorso del file di log,
 utilizzato per **creare le cartelle e il file di log**.
 
@@ -86,14 +89,14 @@ utilizzato per **creare le cartelle e il file di log**.
 5. **ottiene lista file su questo pc con lo script "getfiles.sh"**, identificandoli con l'hostname della macchina locale (output comando "hostname")
 Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguire** prima la funzione ```findtree()``` e poi ```getstatnmd5()```
 
-	    findtree()
+            findtree()
 
     La funzione ```findtree()``` **usa le informazioni ricavate dal file di configurazione** per comporre il **comando find**
     da usare per trovare i **percorsi di tutti i file** presenti sulla macchina,
     eventualmente **ignorando con -prune alcuni file/percorsi**
     > Tutti i percorsi verranno **scritti sul file** ```/var/tmp/checksync/find_output.csv
 
-	    getstatnmd5()
+            getstatnmd5()
 
     La funzione ```getstatnmd5()``` si occupa di **scorrrere il file** scritto dalla funzione ```findtree()``` e di
     **scrivere sul file $getfiles_path il percorso dei file**, **dimensione** in byte e **timestamp di ultima modifica** dati dal **comando stat**,
@@ -108,7 +111,7 @@ Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguir
     di **eseguire find, stat e md5sum via sudo senza password**
 
     L'output di ```getstatnmd5()``` sara' un **file csv** il cui **percorso** e' specificato nel **file di configurazione**,
-    sezione "[OUTPUT]" proprieta' "getfiles". 
+    sezione "[OUTPUT]" proprieta' "getfiles".
     Questo file **conterra' percorso del file, dimensione, timestamp di ultima modifica e l'hostname** della macchina
 
 6. Lo script checksync.sh **ottiene lista file** su server remoto con lo **script "getfiles.sh"**, identificandoli con l'hostname della macchina remota.
@@ -125,10 +128,10 @@ e scorrendo il suo output scrive il contenuto riga per riga sul log locale
 L'output del comando viene scritto sul file il cui percorso e' specificato sul file di configurazione specificato nella sezione "[OUTPUT]", proprieta' "diffout"
 
 10. **Visualizza/manda via mail le informazioni** ricavate con lo **script "printdiffs.sh"**.
-Lo script checksync.sh fa il **source dello script** "printdiffs.sh" rendendo disponibile la sua funzione 
+Lo script checksync.sh fa il **source dello script** "printdiffs.sh" rendendo disponibile la sua funzione
 principale, ```printdiffs()```
 
-	    printdiffs()
+            printdiffs()
 
     La funzione **richiede come parametro il percorso del file output del comando cat**
     che contiene tutte le informazioni dei file sia del server remoto, sia del server locale.
@@ -156,7 +159,7 @@ l'**output in formato html** verra' memorizzato in una variabile e **utilizzato 
 > ```email_sender()``` per mandare la mail **ha bisogno di una mail** specificata nel **file di configurazione**
 e di **sendmail installato** sulla macchina
 
-Se al programma viene passata come **secondo parametro** la flag "**-e**". "**-me**", "**-em**" o **nessuna flag** 
+Se al programma viene passata come **secondo parametro** la flag "**-e**". "**-me**", "**-em**" o **nessuna flag**
 l'**output** del programma verra' **visualizzato sul terminale**.
 
 > Per **assicurarsi che non si siano errori** durante l'esecuzione di checksync.sh i comandi vengono eseguiti attraverso
@@ -172,14 +175,16 @@ in caso di errore, il secondo parametro e' la **descrizione** di cio'
 che fa il comando (utile con boold=true per debug e in caso di errore)
 e gli **altri parametri compongono il comando** da eseguire
 
-## Esecuzione script 
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
+
+## Esecuzione script
 Per eseguire lo script **posizionarsi nella cartella** bin e digitare
 ```
 ./checksync.sh <config file> [<output dest>]
 ```
 
 > Se necessario **renderlo eseguibile** con il comando ```chmod +x checksync.sh```
- 
+
 "\<config file>" e' il **percorso di un file di configurazione**
 
 Esempio struttura file di configurazione:
@@ -212,15 +217,15 @@ Il **file di configurazione** e' diviso in 6 sezioni:
 * sezione "**[IGNORA]**" (facoltativa) : contiene **percorsi** assoluti di cartelle o file **da ignorare** (uno per riga)
 * sezione "**[LOG]**" (facoltativa) : la proprieta' "path" viene usata per il **percorso file di log**
     > Se la sezione **non esiste** verra' usato il percorso ```/var/log/checksync/checksync.log```
-* sezione "**[MACCHINA 2]**": contiene 
+* sezione "**[MACCHINA 2]**": contiene
     * la proprieta' "**ip**" : indirizzo **ip macchina remota** da analizzare
     * la proprieta' "**user**" (facoltativa) : **nome utente** con cui connettersi alla **macchina remota**, se non specificato verra' usato il nome utente corrente
-    * la proprieta' "**scppath**" : **percorso** della macchina **remota** in cui **copiare la cartella** con tutti gli script 
+    * la proprieta' "**scppath**" : **percorso** della macchina **remota** in cui **copiare la cartella** con tutti gli script
 * sezione "**[OUTPUT]**" : contiene
     * la proprieta' "**getfiles**" : percorso **file di output dello script getfiles.sh** (per trovare i percorsi di file e cartelle)
-    * la proprieta' "**diffout**" : percorso **file di output del comando cat** (contenente percorsi file delle due macchine) 
+    * la proprieta' "**diffout**" : percorso **file di output del comando cat** (contenente percorsi file delle due macchine)
 * sezione "**[NOTIFICHE]**" (facoltativa) : contiene
-    * la proprieta' "**email**" : **indirizzo email** a cui mandare l'output 
+    * la proprieta' "**email**" : **indirizzo email** a cui mandare l'output
 
 "\<output dest>" e' la **destinazione dell'output**:
 * "**-m**" = **email**
@@ -232,17 +237,74 @@ attraverso il comando:
 
     sudo apt-get install sendmail
 
-> Se le email **non vengono ricevute**, provare a rieseguire lo script dopo aver 
-**riavviato il daemon** di sendmail con il comando ```sudo sendmail -bd```
+> Se le email **non vengono ricevute**, provare a rieseguire lo script dopo aver
+**riavviato il daemon** di sendmail con il comando ```sudo sendmail -bd```.
+
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
+
+## Status code
+Tutti gli script hanno dei codici uscita in caso di errore
+
+I codici:
+* **1x** corrispondono allo script configs.sh
+* **2x** corrispondono allo script checksync.sh
+* **3x** corrispondono allo script logger.sh
+* **4x** corrispondono allo script printdiffs.sh
+
+In particolare:
+
+| Status code | Descrizione                                                                   | Script        |
+|-------------|-------------------------------------------------------------------------------|---------------|
+| 10          | Il file di configurazione non esiste                                          | configs.sh    |
+| 11          | Parametro file di configurazione non passato                                  | configs.sh    |
+| 12          | Sezione con percorsi da analizzare ( [ANALIZZA] ) vuota                       | configs.sh    |
+| 13          | Indirizzo IP macchina remota non specificato ( [MACCHINA 2]ip)                | configs.sh    |
+| 14          | Percorso da analizzare non valido/inesistente                                 | configs.sh    |
+| 15          | Indirizzo IP non valido                                                       | configs.sh    |
+| 16          | Cartella remota ( [MACCHINA 2]scppath) non esistente                          | configs.sh    |
+| 17          | Macchina remota non raggiungibile                                             | configs.sh    |
+| 20          | Errore durante la copia degli script su server remoto                         | checksync.sh  |
+| 21          | Errore durante copia file di configurazione su macchina remota                | checksync.sh  |
+| 22          | Errore durante esecuzione di getfiles.sh in locale                            | checksync.sh  |
+| 23          | Errore durante esecuzione di getfiles.sh su macchina remota                   | checksync.sh  |
+| 24          | Errore durante copia del log su macchina remota                               | checksync.sh  |
+| 25          | Errore durante eliminazione log su macchina remota                            | checksync.sh  |
+| 26          | Errore durante il recupero output getfiles.sh remoto e creazione output "cat" | checksync.sh  |
+| 27          | Errore durante l'esecuzione di printdiffs.sh                                  | checksync.sh  |
+| 30          | Percorso file di log non esistente ($SCRIPT_LOG)                              | logger.sh     |
+| 40          | File "cat" passato come parametro a printdiffs() non esistente                | printdiffs.sh |
+| 41          | Nessun file "cat" passato come parametro a printdiffs()                       | printdiffs.sh |
+| 42          | Parametro passato a bytesToHuman() non valido (deve essere intero >=0)        | printdiffs.sh |
+| 43          | Parametro Index passato a get_csvelement() non valido (deve essere intero >0) | printdiffs.sh |
+| 44          | Parametro Stringa passato a get_csvelement() vuoto                            | printdiffs.sh |
+| 45          | Parametro Index passato a get_csvelement() troppo grande (out of range)       | printdiffs.sh |
+| 46          | Parametro Stringa senza delimitatore o Index = 0 passati a get_csvelement()   | printdiffs.sh |
+
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
 
 ## Requisiti
 * Sistema operativo **Unix / Unix-like**
 * [ **sendmail** se si vuole ricevere l'output via email ]
 
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
+
 ### Contenuto archivio ![](https://i.imgur.com/FWdiWIM.png)
 ```
 checksync-master/
 ├ bin/
+│   ├ test/
+│   │   ├ configfiles/
+│   │   │   └ ...
+│   │   ├ getfiles_testing/
+│   │   │   └ ...
+│   │   ├ libs/
+│   │   │   └ ...
+│   │   ├ printdiffs_testing/
+│   │   │   └ ...
+│   │   ├ test_configs.bats
+│   │   ├ test_getfiles.bats
+│   │   ├ test_logger.bats
+│   │   └ test_printdiffs.bats
 │   ├ utils/
 │   │   ├ getfiles.sh
 │   │   ├ logger.sh
@@ -251,11 +313,22 @@ checksync-master/
 │   ├ config.ini
 │   └ checksync.sh
 ├ doc/
-│   └ README.md 
+│   └ README.md
 └ README.md
 ```
 
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
+
 ## Changelog ![](https://i.imgur.com/SDKHpak.png)
+
+**03_04 2019-06-17:** <br>
+Features:
+* Aggiunti script bats di test
+* Aggiunti controlli IP, scppath e percorsi da analizzare
+* Aggiunte statistiche su terminale e via email in fondo agli output
+
+Modifiche:
+* Status code modificati secondo lo schema nella sezione status code
 
 **03_03 2019-06-10:** <br>
 Features:
@@ -270,7 +343,7 @@ problemi nel riconoscimento di file presenti su entrambe le macchine
 a causa di caratteri come "-" nel nome
     > Questo avveniva ad esempio con i file ```/etc/shadow-``` e ```/etc/shadow```,
     dove questi apparivano in successione, facendo rappresentare al programma che i due file
-    prima erano presenti solo su una macchina, poi solo sull'altra 
+    prima erano presenti solo su una macchina, poi solo sull'altra
     (invece di rappresentarli presenti su entrambe le macchine)
 
 * I comandi find, stat e md5sum non bloccano piu' l'esecuzione del programma
@@ -304,15 +377,17 @@ perche' normalmente non hanno l'accesso a tutte le informazioni relative ai file
 
 **02_01 2019-06-05:** <br>
 Changes:
-* Rimosso script in python utils/printdiffs.py 
+* Rimosso script in python utils/printdiffs.py
 (la visualizzazione adesso viene svolta dall'omonimo script bash)
 * Il nuovo script di visualizzazione (utils/printdiffs.sh) non scrive piu' il suo output su file
 * Il nuovo script di visualizzazione (utils/printdiffs.sh) non necessita' piu' di due file
-in input distinti per ogni macchina 
+in input distinti per ogni macchina
 * Rimosso script utils/analizediffs.sh, lo script di visualizzazione non necessita' piu' di due file
 
 **01_01 2019-06-04:** <br>
 Prima versione
+
+<a href="#sezioni-pagina-">Torna a sezioni pagina</a>
 
 # Autore ![](https://i.imgur.com/ej4EVF6.png)
 Zenaro Stefano ( [Github](https://github.com/mario33881) )

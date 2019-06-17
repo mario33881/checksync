@@ -1,0 +1,10 @@
+path;macchina
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname
+/mnt/c/Users/s.zenaro/Desktop/checkmaster_repository/checksync/bin/test/getfiles_testing/mainroot/root3/file.txt;batstesting-hostname
