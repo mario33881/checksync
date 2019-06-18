@@ -43,9 +43,19 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/confignoinora.csv"    
+    run cat /var/tmp/checksync/bats-tests/getfiles.tmp  
+        
     [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    [[ "${lines[0]}" = "path;macchina" ]]
+    [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [[ "${lines[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${lines[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${lines[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${lines[9]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root3/file.txt;batstesting-hostname" ]]
 }
 
 
@@ -56,9 +66,18 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopaths.csv"
+    run cat /var/tmp/checksync/bats-tests/getfiles.tmp
+
     [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    [[ "${lines[0]}" = "path;macchina" ]]
+    [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [[ "${lines[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${lines[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${lines[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
 }
 
 
@@ -79,9 +98,15 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopathsnignora.csv"
+    run cat /var/tmp/checksync/bats-tests/getfiles.tmp
+
     [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    [[ "${lines[0]}" = "path;macchina" ]]
+    [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
 }
 
 
@@ -108,7 +133,12 @@ teardown(){
 
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopathsnignorafiles.csv"
+    run cat /var/tmp/checksync/bats-tests/getfiles.tmp
+
     [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    [[ "${lines[0]}" = "path;macchina" ]]
+    [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${lines[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${lines[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
 }
