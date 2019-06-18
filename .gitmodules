@@ -1,6 +1,3 @@
-[submodule "bin/test/libs/bats"]
-	path = bin/test/libs/bats
-	url = https://github.com/sstephenson/bats
 [submodule "bin/test/libs/bats-support"]
 	path = bin/test/libs/bats-support
 	url = https://github.com/ztombol/bats-support
