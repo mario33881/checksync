@@ -1,4 +1,4 @@
-#!./libs/bats/bin/bats
+#!./libs/bats-core/bin/bats
 
 load 'libs/bats-support/load'
 load 'libs/bats-assert/load'

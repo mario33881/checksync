@@ -1,4 +1,4 @@
-#!./libs/bats/bin/bats
+#!./libs/bats-core/bin/bats
 
 load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
@@ -239,9 +239,13 @@ TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
     # esegui printdiffs per ottenere output
     run printdiffs ${TEST_FOLDER}/diffout.csv 
     echo "$output" | head -n -2 > "/var/tmp/checksync/bats-test/printdiffs_out.tmp"
+    
+    echo "$output" >&3
+    echo "" >&3
 
     # verifica che output esistente sia uguale all'output del comando
     run diff '/var/tmp/checksync/bats-test/printdiffs_out.tmp' "$TEST_FOLDER/output.txt" 
+    echo "$output" >&3
     [ "$status" -eq 0 ]
 
     # cancella cartella dei test
