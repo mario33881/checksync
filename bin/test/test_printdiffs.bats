@@ -238,7 +238,7 @@ TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
 
     # esegui printdiffs per ottenere output
     run printdiffs ${TEST_FOLDER}/diffout.csv 
-    echo "$output" > "/var/tmp/checksync/bats-test/printdiffs_out.tmp"
+    echo "$output" | head -n -2 > "/var/tmp/checksync/bats-test/printdiffs_out.tmp"
 
     # verifica che output esistente sia uguale all'output del comando
     run diff '/var/tmp/checksync/bats-test/printdiffs_out.tmp' "$TEST_FOLDER/output.txt" 
