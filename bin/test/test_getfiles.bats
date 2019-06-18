@@ -50,15 +50,15 @@ teardown(){
     
     out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
     [[ "${out[0]}" = "path;macchina" ]]
-    [[ "${out[1]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root3/file.txt;batstesting-hostname" ]]
-    [[ "${out[2]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
-    [[ "${out[3]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
-    [[ "${out[4]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
-    [[ "${out[5]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
-    [[ "${out[6]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
-    [[ "${out[7]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
-    [[ "${out[8]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
-    [[ "${out[9]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root3/file.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${out[9]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
     [ ${#out[@]} -eq 10 ]
 }
 
@@ -76,14 +76,14 @@ teardown(){
     out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
 
     [[ "${out[0]}" = "path;macchina" ]]
-    [[ "${out[1]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
-    [[ "${out[2]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
-    [[ "${out[3]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
-    [[ "${out[4]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
-    [[ "${out[5]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
-    [[ "${out[6]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
-    [[ "${out[7]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
-    [[ "${out[8]}" = *"/mnt/c/Users/s.zenaro/Desktop/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${out[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
     [ ${#out[@]} -eq 9 ]
 }
 
