@@ -55,11 +55,14 @@ function remove_slash(){
 function ismyip(){
     # restituisce vero se l'ip passato come parametro e' configurato sulla macchina,
     # altrimenti restituisce falso
+
     ip="$1"
     ips=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
 
-    [ "$ips" = "$ip" ]
-    return $?
+    [[ "$ips" = *"$ip"* ]]
+    out="$?"
+
+    return $out
 }
 
 
@@ -68,6 +71,7 @@ function pingstat(){
     ping -c 1 "$ip" 2>/dev/null 1>/dev/null
     return $?
 }
+
 
 # ============================================ GESTIONE FILE DI CONFIGURAZIONE ============================================
 #
