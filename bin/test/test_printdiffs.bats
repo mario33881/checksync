@@ -8,6 +8,25 @@ SCRIPT_PATH="$( cd $SCRIPT_PATH ; pwd )/printdiffs.sh"
 
 TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
 
+function gettimezone(){
+    # ottieni timezone
+    # https://unix.stackexchange.com/a/451925
+    if filename=$(readlink /etc/localtime); then
+        # /etc/localtime is a symlink as expected
+        timezone=${filename#*zoneinfo/}
+        if [[ $timezone = "$filename" || ! $timezone =~ ^[^/]+/[^/]+$ ]]; then
+            # not pointing to expected location or not Region/City
+	    >&2 echo "$filename points to an unexpected location"
+            exit 1
+        fi
+        echo "$timezone"
+    else  # compare files by contents
+        # https://stackoverflow.com/questions/12521114/getting-the-canonical-time-zone-name-in-shell-script#comment88637393_12523283
+        find /usr/share/zoneinfo -type f ! -regex ".*/Etc/.*" -exec \
+            cmp -s {} /etc/localtime \; -print | sed -e 's@.*/zoneinfo/@@' | head -n1
+    fi
+}
+
 
 @test "printdiffs.sh source" {
     # faccio il source del file
@@ -233,6 +252,12 @@ TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
     # test finale di funzionamento
     load "$SCRIPT_PATH"
     
+    # ottieni timezone attuale
+    timezone=$( gettimezone )
+    
+    # imposta timezone 
+    export TZ=Europe/Rome
+
     # crea cartella dei test
     mkdir -p "/var/tmp/checksync/bats-test"
 
@@ -243,6 +268,9 @@ TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
     echo "$output" >&3
     echo "" >&3
 
+    # reimposta il vecchio timezone
+    export TZ="$timezone"
+ 
     # verifica che output esistente sia uguale all'output del comando
     run diff '/var/tmp/checksync/bats-test/printdiffs_out.tmp' "$TEST_FOLDER/output.txt" 
     echo "$output" >&3
