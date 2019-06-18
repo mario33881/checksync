@@ -44,7 +44,8 @@ teardown(){
     extract_pathnhostname
 
     run cat /var/tmp/checksync/bats-tests/getfiles.tmp  
-        
+    
+    echo "# $output" >&3
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" = "path;macchina" ]]
     [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
@@ -67,7 +68,7 @@ teardown(){
     extract_pathnhostname
 
     run cat /var/tmp/checksync/bats-tests/getfiles.tmp
-
+    echo "# $output" >&3
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" = "path;macchina" ]]
     [[ "${lines[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
