@@ -321,6 +321,24 @@ checksync-master/
 
 ## Changelog ![](https://i.imgur.com/SDKHpak.png)
 
+**03_05 2019-06-19:** <br>
+Features:
+* I percorsi da ignorare possono terminare con "/" e "/."
+    > Prima "-prune" ignorava questi percorsi 
+
+Modifiche:
+* Per i test ora viene usato bats-core e non piu' bats
+
+Fixes:
+* Ora la funzione ismyip() in configs.sh indica effettivamente se l'ip
+passato come parametro appartiene o no alla macchina
+    > Questo evita di eseguire il test di ping e dell'esistenza
+      della cartella remota in cui copiare gli script
+      ( In quest'ultimo caso a causa della password ssh il test poteva fallire )
+* Il test che verifica la presenza della cartella remota 
+  viene effettuata con lo user (se specificato) della configurazione
+    > Prima il test veniva eseguito con lo user attuale della macchina locale
+
 **03_04 2019-06-17:** <br>
 Features:
 * Aggiunti script bats di test

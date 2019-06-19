@@ -1,4 +1,4 @@
-#!./libs/bats/bin/bats
+#!./libs/bats-core/bin/bats
 
 load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
@@ -119,14 +119,17 @@ load 'libs/bats-assert/load'
 }
 
 
-@test "configs.sh cartella destinazione remota non esistente: status code 16" {
-    # scp_path non esistente
-    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/wrongscppath.ini"
-    [ "$status" -eq 16 ]
-    [ "$output" = "Cartella remota in cui copiare lo script non esiste" ]
-    
-    rm "$BATS_TEST_DIRNAME/checksync.log"
-}
+# Non e' possibile eseguire questo test da travis 
+# perche' l'ssh richiede la password
+#
+#@test "configs.sh cartella destinazione remota non esistente: status code 16" {
+#    # scp_path non esistente
+#    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/wrongscppath.ini"
+#    [ "$status" -eq 16 ]
+#    [ "$output" = "Cartella remota in cui copiare lo script non esiste" ]
+#    
+#    rm "$BATS_TEST_DIRNAME/checksync.log"
+#}
 
 
 @test "configs.sh configurazione completa con email=none" {

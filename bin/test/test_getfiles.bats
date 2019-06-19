@@ -1,4 +1,4 @@
-#!./libs/bats/bin/bats
+#!./libs/bats-core/bin/bats
 
 load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
@@ -27,11 +27,13 @@ extract_pathnhostname(){
 
 
 setup(){
+    # crea la cartella dei test
     mkdir -p "/var/tmp/checksync/bats-tests/"
 }
 
 
 teardown(){
+    # elimina cartella dei test
     rm -r "/var/tmp/checksync/bats-tests/"
 }
 
@@ -43,9 +45,21 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/confignoinora.csv"    
-    [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    # l'ordine dell'output a volte cambia, lo riordino
+    cat /var/tmp/checksync/bats-tests/getfiles.tmp | sort -r > /var/tmp/checksync/bats-tests/getfiles.ordered.tmp  
+    
+    out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
+    [[ "${out[0]}" = "path;macchina" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root3/file.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${out[9]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [ ${#out[@]} -eq 10 ]
 }
 
 
@@ -56,9 +70,21 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopaths.csv"
-    [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    # l'ordine dell'output a volte cambia, lo riordino
+    cat /var/tmp/checksync/bats-tests/getfiles.tmp | sort -r > /var/tmp/checksync/bats-tests/getfiles.ordered.tmp
+
+    out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
+
+    [[ "${out[0]}" = "path;macchina" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[6]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[7]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file2.txt;batstesting-hostname" ]]
+    [[ "${out[8]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder1/root1_folder1_file1.txt;batstesting-hostname" ]]
+    [ ${#out[@]} -eq 9 ]
 }
 
 
@@ -71,7 +97,6 @@ teardown(){
     toignore_abs=$( cd "$toignore" ; pwd )
 
     # salvo configurazione nuova in un file temporaneo
-    #sed -e 's/${toignore}/${toignore_abs}/g' "$BATS_TEST_DIRNAME/getfiles_testing/configs/configtwopathsnignora.ini" > /var/tmp/checksync/bats-tests/config.tmp
     sed -e "s|${toignore}|${toignore_abs}|g" "$BATS_TEST_DIRNAME/getfiles_testing/configs/configtwopathsnignora.ini" > /var/tmp/checksync/bats-tests/config.tmp
 
     run "$BATS_TEST_DIRNAME/../utils/getfiles.sh" "/var/tmp/checksync/bats-tests/config.tmp" "batstesting-hostname" "--skip-conn-test"
@@ -79,9 +104,18 @@ teardown(){
     
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopathsnignora.csv"
-    [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    # l'ordine dell'output a volte cambia, lo riordino
+    cat /var/tmp/checksync/bats-tests/getfiles.tmp | sort -r > /var/tmp/checksync/bats-tests/getfiles.ordered.tmp
+
+    out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
+
+    [[ "${out[0]}" = "path;macchina" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[5]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [ ${#out[@]} -eq 6 ]
 }
 
 
@@ -108,7 +142,15 @@ teardown(){
 
     extract_pathnhostname
 
-    run diff -Z /var/tmp/checksync/bats-tests/getfiles.tmp "$BATS_TEST_DIRNAME/getfiles_testing/outputs/configtwopathsnignorafiles.csv"
-    [ "$status" -eq 0 ]
-    [ "$output" = "" ]
+    # l'ordine dell'output a volte cambia, lo riordino
+    cat /var/tmp/checksync/bats-tests/getfiles.tmp | sort -r > /var/tmp/checksync/bats-tests/getfiles.ordered.tmp
+
+    out=( $( cat /var/tmp/checksync/bats-tests/getfiles.ordered.tmp ) )
+
+    [[ "${out[0]}" = "path;macchina" ]]
+    [[ "${out[1]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root2_folder1/root2_folder1_file3.txt;batstesting-hostname" ]]
+    [[ "${out[2]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [[ "${out[3]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root2/root1_folder2/eq_file1;batstesting-hostname" ]]
+    [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
+    [ ${#out[@]} -eq 5 ]
 }

@@ -43,6 +43,36 @@ function valid_ipv4(){
 }
 
 
+function remove_slash(){
+    # questa funzione rimuove lo slash e 
+    # il punto dal percorso passato come parametro
+
+    path="$1"
+    echo "$path" | sed -e 's|\.*$||' -e 's|/*$||'
+}
+
+
+function ismyip(){
+    # restituisce vero se l'ip passato come parametro e' configurato sulla macchina,
+    # altrimenti restituisce falso
+
+    ip="$1"
+    ips=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+
+    [[ "$ips" = *"$ip"* ]]
+    out="$?"
+
+    return $out
+}
+
+
+function pingstat(){
+    ip="$1"
+    ping -c 1 "$ip" 2>/dev/null 1>/dev/null
+    return $?
+}
+
+
 # ============================================ GESTIONE FILE DI CONFIGURAZIONE ============================================
 #
 # Questa parte di programma controlla se e' stato passato il parametro con il percorso del file di configurazione 
@@ -70,7 +100,8 @@ if [ "$configfile" != "" ] ; then
             elif [[ "$line" = "[IGNORA]"* ]] ; then
                 # se la configurazione e' nella sezione ignora...
                 path="${line:8}"
-                path="$( stripspaces "$path" )" # rimuovi eventuali spazi prima e dopo il percorso
+                path="$( stripspaces "$path" )"  # rimuovi eventuali spazi prima e dopo il percorso
+                path="$( remove_slash "$path" )" # rimuovi "/" e "." dai percorsi
                 toignore_paths+=("${path}") # aggiungi percorso al vettore
     
             elif [[ "$line" = "[LOG]path = "* ]] ; then
@@ -255,14 +286,14 @@ fi
 
 if [ "$testingflag" != "--skip-conn-test" ] ; then
     # flag permette di evitare questo controllo
-    if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ] ; then
+    if ! ismyip "$ip" ; then
         # il controllo fallo solo se sei sulla macchina locale
-        if ! ping -c 1 "$ip" > /dev/null ; then
+        if ! pingstat "$ip" ; then
             echo "$ip non rangiungibile"
             exit 17
         fi
 
-        if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
+        if ! ssh "$user"@"$ip" "cd '${scp_path}'" 2> /dev/null ; then
             echo "Cartella remota in cui copiare lo script non esiste"
             exit 16
         fi
