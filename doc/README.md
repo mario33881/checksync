@@ -321,6 +321,15 @@ checksync-master/
 
 ## Changelog ![](https://i.imgur.com/SDKHpak.png)
 
+**04_01 2019-06-20:** <br>
+Features:
+* Tutti gli script hanno sezione main
+    > Questo permette di testare anche quelle funzioni 
+    che non venivano testate in precedenza
+* Ora le configurazioni possono contenere spazi
+    > ad esempio "ip = x.x.x.x" ora e' valido,
+    prima era obbligatorio scrivere "ip=x.x.x.x"
+
 **03_05 2019-06-19:** <br>
 Features:
 * I percorsi da ignorare possono terminare con "/" e "/."

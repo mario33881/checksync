@@ -305,3 +305,28 @@ load 'libs/bats-assert/load'
     
     ! pingstat "100::"
 }
+
+
+@test "configs.sh configurazione completa con spazi" {
+    #Analizza: '/etc/ /var /bin/.'   ; definito nella configurazione
+    #Ignora: '/etc/default /etc/apt' ; definito nella configurazione
+    #Log: 'customlog.txt'            ; definito nella configurazione
+    #User: 'customuser'              ; definito nella configurazione
+    #Scp: 'custompath'               ; definito nella configurazione
+    #Getfiles: 'getfiles_output.csv' ; definito nella configurazione
+    #Diffout: 'outputdiff.csv'       ; definito nella configurazione
+    #Email: 'random@email.com'       ; definito nella configurazione
+    #Sendemail: 'false'              ; true perche' email definita
+
+    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/completeconfigwspaces.ini" "batstesting-hostname" "--test"
+    # ignoro status perche' potrebbe non trovare scp_path remoto
+    [ "${lines[0]}" = "Analizza: '/etc/ /var /bin/.'" ]
+    [ "${lines[1]}" = "Ignora: '/etc/default /etc/apt'" ]
+    [ "${lines[2]}" = "Log: '/var/tmp/checksync/bats-test/customlog.txt'" ]
+    [ "${lines[3]}" = "User: 'customuser'" ]
+    [ "${lines[4]}" = "Scp: 'custompath'" ]
+    [ "${lines[5]}" = "Getfiles: 'getfiles_output.csv'" ]
+    [ "${lines[6]}" = "Diffout: 'outputdiff.csv'" ]
+    [ "${lines[7]}" = "Email: 'random@email.com'" ]
+    [ "${lines[8]}" = "Sendemail: 'true'" ]
+}
