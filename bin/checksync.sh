@@ -27,7 +27,7 @@
 #
 
 boold=false
-SCRIPTPATH="$( cd "$(dirname "$0")" || exit ; pwd -P )"  # percorso questo script
+SCRIPTPATH="$( cd "$( dirname "$0" )" || exit ; pwd -P )"  # percorso questo script
 SCRIPTDIR=$( basename "$SCRIPTPATH" )                    # nome cartella in cui risiede questo script
 
 output_flag="$2" # flag di output ( -e = echo , -em o -me = mail e echo, -m = mail )

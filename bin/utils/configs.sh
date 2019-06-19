@@ -293,7 +293,7 @@ if [ "$testingflag" != "--skip-conn-test" ] ; then
             exit 17
         fi
 
-        if ! ssh "$ip" "cd '${scp_path}'" 2> /dev/null ; then
+        if ! ssh "$user"@"$ip" "cd '${scp_path}'" 2> /dev/null ; then
             echo "Cartella remota in cui copiare lo script non esiste"
             exit 16
         fi
