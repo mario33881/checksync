@@ -2,7 +2,7 @@
 
 #
 # Nome programma    : checksync
-# Versione          : 03_04
+# Versione          : 03_05
 # Autore            : Zenaro Stefano
 # Github repository : https://github.com/mario33881/checksync
 #
