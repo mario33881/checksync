@@ -114,6 +114,9 @@ function gettimezone(){
 
     run get_csvelement  "random;csv;string" 3
     [ "$output" = "string" ]
+
+    run get_csvelement  "nextelement;isempty;" 3
+    [ "$output" = "" ]
 }
 
 
@@ -273,6 +276,50 @@ function gettimezone(){
  
     # verifica che output esistente sia uguale all'output del comando
     run diff '/var/tmp/checksync/bats-test/printdiffs_out.tmp' "$TEST_FOLDER/output.txt" 
+    echo "$output" >&3
+    [ "$status" -eq 0 ]
+
+    # cancella cartella dei test
+    rm -r "/var/tmp/checksync/bats-test"
+}
+
+
+@test "printdiffs.sh test html_stats" {
+    # prova statistiche html per email
+    load "$SCRIPT_PATH"
+
+    run html_stats "param1" "2param" "3 param" "param 4" "qualcosa"
+    [ "$output" = "<h4 style='padding: 8px;color: white; text-align:center;'> Sul server param1 sono stati analizzati 2param file di cui 3 param sono presenti sul server param 4 qualcosa </h4>" ]
+}
+
+
+@test "printdiffs.sh test printdiffs output html" {
+    # test finale di funzionamento
+    load "$SCRIPT_PATH"
+
+    # ottieni timezone attuale
+    timezone=$( gettimezone )
+
+    # imposta timezone
+    export TZ=Europe/Rome
+
+    # crea cartella dei test
+    mkdir -p "/var/tmp/checksync/bats-test"
+
+    # esegui printdiffs per ottenere output
+    run printdiffs ${TEST_FOLDER}/diffout.csv "html"
+    echo "$output" > "/var/tmp/checksync/bats-test/printdiffs_out.tmp"
+
+    echo "$output" >&3
+    echo "" >&3
+
+    # reimposta il vecchio timezone
+    export TZ="$timezone"
+
+    # verifica che output esistente sia uguale all'output del comando
+    # > i due sed servono per ignorare il tag contenente data e ora 
+    # > ( perche' variano ad ogni esecuzione )
+    run diff <( sed "/<h2 style='margin-top: 0px;'> /,/ <\/h2> /d" '/var/tmp/checksync/bats-test/printdiffs_out.tmp' ) <( sed "/<h2 style='margin-top: 0px;'> /,/ <\/h2> /d" "$TEST_FOLDER/outputhtml.html" )
     echo "$output" >&3
     [ "$status" -eq 0 ]
 

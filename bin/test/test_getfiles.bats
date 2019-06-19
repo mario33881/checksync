@@ -154,3 +154,4 @@ teardown(){
     [[ "${out[4]}" = *"/checksync/bin/test/getfiles_testing/mainroot/root1/root1_folder2/eq_file2;batstesting-hostname" ]]
     [ ${#out[@]} -eq 5 ]
 }
+

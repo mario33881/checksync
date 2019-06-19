@@ -119,19 +119,6 @@ load 'libs/bats-assert/load'
 }
 
 
-# Non e' possibile eseguire questo test da travis 
-# perche' l'ssh richiede la password
-#
-#@test "configs.sh cartella destinazione remota non esistente: status code 16" {
-#    # scp_path non esistente
-#    run "$BATS_TEST_DIRNAME/../utils/configs.sh" "$BATS_TEST_DIRNAME/configfiles/wrongscppath.ini"
-#    [ "$status" -eq 16 ]
-#    [ "$output" = "Cartella remota in cui copiare lo script non esiste" ]
-#    
-#    rm "$BATS_TEST_DIRNAME/checksync.log"
-#}
-
-
 @test "configs.sh configurazione completa con email=none" {
     #Analizza: '/etc/ /var /bin/.'   ; definito nella configurazione
     #Ignora: '/etc/default /etc/apt' ; definito nella configurazione
@@ -179,4 +166,142 @@ load 'libs/bats-assert/load'
     [ "${lines[6]}" = "Diffout: 'outputdiff.csv'" ]
     [ "${lines[7]}" = "Email: 'random@email.com'" ]
     [ "${lines[8]}" = "Sendemail: 'true'" ]
+}
+
+
+@test "configs.sh prova funzione stripspaces()" {
+    # prova funzione stripspaces() che si occupa di 
+    # rimuovere gli spazi a inizio e fine stringa
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    run stripspaces "      stringa casualedi test  "
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "stringa casualedi test" ]
+
+    run stripspaces "altra stringa conspazio a destra           "
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "altra stringa conspazio a destra" ]
+
+
+    run stripspaces "   e ora stringa conspazio a sinistra"
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "e ora stringa conspazio a sinistra" ]
+}
+
+
+@test "configs.sh prova funzione valid_ipv6(): indirizzi validi" {
+    # prova funzione valid_ipv6() che si occupa di verificare
+    # la validita' di un indirizzo ipv6
+ 
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    valid_ipv6 "0:0:0:0:0:0:0:1"
+    valid_ipv6 "::1"
+    valid_ipv6 "2001:DB8:0:0:8:800:200C:417A"
+    valid_ipv6 "1200:0000:AB00:1234:0000:2552:7777:1313"
+    valid_ipv6 "21DA:D3:0:2F3B:2AA:FF:FE28:9C5A"
+}
+
+
+@test "configs.sh prova funzione valid_ipv6(): indirizzi non validi" {
+    # prova funzione valid_ipv6() che si occupa di verificare
+    # la validita' di un indirizzo ipv6 (in questo caso nessuno e' valido)
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    ! valid_ipv6 ""
+    ! valid_ipv6 "              "
+    ! valid_ipv6 "1200::AB00:1234::2552:7777:1313"
+    ! valid_ipv6 "1200:0000:AB00:1234:O000:2552:7777:1313"
+}
+
+
+@test "configs.sh prova funzione valid_ipv4(): indirizzi validi" {
+    # prova funzione valid_ipv4() che si occupa di verificare
+    # la validita' di un indirizzo ipv4
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+    
+    valid_ipv4 "4.2.2.2"
+    valid_ipv4 "192.168.1.1"
+    valid_ipv4 "0.0.0.0"
+    valid_ipv4 "255.255.255.255"
+    valid_ipv4 "192.168.0.1"
+}
+
+
+@test "configs.sh prova funzione valid_ipv4(): indirizzi non validi" {
+    # prova funzione valid_ipv4() che si occupa di verificare
+    # la validita' di un indirizzo ipv4 (in questo caso nessuno e' valido)
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    ! valid_ipv4 ""
+    ! valid_ipv4 "         "
+    ! valid_ipv4 "a.b.c.d"
+    ! valid_ipv4 "255.255.255.256"
+    ! valid_ipv4 "192.168.0"
+    ! valid_ipv4 "1234.123.123.123"
+}
+
+
+@test "configs.sh prova funzione remove_slash()" {
+    # prova funzione che rimuove "/" e "/." dai percorsi prune
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    run remove_slash ""
+    [ "$output" = "" ]
+
+    run remove_slash "/"
+    [ "$output" = "" ]
+
+    run remove_slash "/."
+    [ "$output" = "" ]
+
+    run remove_slash "questo/e'/un/percorso/casuale/."
+    [ "$output" = "questo/e'/un/percorso/casuale" ]
+
+    run remove_slash "questo/e'/un/percorso/casuale/"
+    [ "$output" = "questo/e'/un/percorso/casuale" ]
+
+    run remove_slash "questo/e'/un/percorso/casuale"
+    [ "$output" = "questo/e'/un/percorso/casuale" ]
+
+    run remove_slash "/questo/e'/un/percorso/casuale/assoluto/."
+    [ "$output" = "/questo/e'/un/percorso/casuale/assoluto" ]
+
+    run remove_slash "/questo/e'/un/percorso/casuale/assoluto/"
+    [ "$output" = "/questo/e'/un/percorso/casuale/assoluto" ]
+
+    run remove_slash "/questo/e'/un/percorso/casuale/assoluto"
+    [ "$output" = "/questo/e'/un/percorso/casuale/assoluto" ]
+}
+
+
+@test "configs.sh prova funzione ismyip()" {
+    # prova funzione che indica se l'ip passato
+    # appartiene alla macchina
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+
+    ismyip "$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
+    ! ismyip "not.conf.ip."
+}
+
+
+@test "configs.sh prova funzione pingstat()" {
+    # prova funzione che indica se la macchina e' raggiungibile
+
+    source "$BATS_TEST_DIRNAME/../utils/configs.sh"
+    
+    pingstat "127.0.0.1"
+ 
+    ! pingstat "random.ip.0.0"
+    
+    ! pingstat "100::"
 }
