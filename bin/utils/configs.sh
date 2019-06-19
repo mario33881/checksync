@@ -73,6 +73,12 @@ function pingstat(){
 }
 
 
+function getafterequal(){
+    # restituisce l'elemento dopo "="
+    echo "$line" | awk -F "\"*=\"*" "{print \$2}"
+}
+
+
 function configs(){
 
     # ============================================ GESTIONE FILE DI CONFIGURAZIONE ============================================
@@ -110,40 +116,40 @@ function configs(){
                     path="$( remove_slash "$path" )" # rimuovi "/" e "." dai percorsi
                     toignore_paths+=("${path}") # aggiungi percorso al vettore
     
-                elif [[ "$line" = "[LOG]path = "* ]] ; then
+                elif [[ "$line" = "[LOG]path"* ]] ; then
                     # se la configurazione e' nella sezione log, proprieta' path
-                    logpath="${line:12}" # salva percorso del file di log
+                    logpath="$( getafterequal ${line} )"  # salva percorso del file di log
                     logpath="$( stripspaces "$logpath" )" # rimuovi eventuali spazi prima e dopo
     
-                elif [[ "$line" = "[MACCHINA 2]ip = "* ]] ; then
+                elif [[ "$line" = "[MACCHINA 2]ip"* ]] ; then
                     # se la configurazione e' nella sezione macchina 2, proprieta' ip
-                    ip="${line:17}" # salva indirizzo ip
-                    ip="$( stripspaces "$ip" )" # rimuovi eventuali spazi prima e dopo
+                    ip="$( getafterequal ${line} )" # salva indirizzo ip
+                    ip="$( stripspaces "$ip" )"     # rimuovi eventuali spazi prima e dopo
 
-                elif [[ "$line" = "[MACCHINA 2]user = "* ]] ; then
+                elif [[ "$line" = "[MACCHINA 2]user"* ]] ; then
                     # se la configurazione e' nella sezione macchina 2, proprieta' user
-                    user="${line:19}" # salva username
-                    user="$( stripspaces "$user" )" # rimuovi eventuali spazi prima e dopo
+                    user="$( getafterequal ${line} )" # salva username
+                    user="$( stripspaces "$user" )"   # rimuovi eventuali spazi prima e dopo
     
-                elif [[ "$line" = "[MACCHINA 2]scppath = "* ]] ; then
+                elif [[ "$line" = "[MACCHINA 2]scppath"* ]] ; then
                     # se la configurazione e' nella sezione macchina 2, proprieta' scppath
-                    scp_path="${line:22}" # salva scp path
+                    scp_path="$( getafterequal ${line} )"   # salva scp path
                     scp_path="$( stripspaces "$scp_path" )" # rimuovi eventuali spazi prima e dopo
             
-                elif [[ "$line" = "[OUTPUT]getfiles = "* ]] ; then
+                elif [[ "$line" = "[OUTPUT]getfiles"* ]] ; then
                     # se la configurazione e' nella sezione output, proprieta' getfiles
-                    getfiles_path="${line:19}" # salva percorso output getfiles
+                    getfiles_path="$( getafterequal ${line} )"        # salva percorso output getfiles
                     getfiles_path="$( stripspaces "$getfiles_path" )" # rimuovi eventuali spazi prima e dopo
 
-                elif [[ "$line" = "[OUTPUT]diffout = "* ]] ; then
+                elif [[ "$line" = "[OUTPUT]diffout"* ]] ; then
                     # se la configurazione e' nella sezione output, proprieta' diffout
-                    diffout_path="${line:18}" # salva percorso output diffout
+                    diffout_path="$( getafterequal ${line} )"       # salva percorso output diffout
                     diffout_path="$( stripspaces "$diffout_path" )" # rimuovi eventuali spazi prima e dopo
             
-                elif [[ "$line" = "[NOTIFICHE]email = "* ]] ; then
+                elif [[ "$line" = "[NOTIFICHE]email"* ]] ; then
                     # se la configurazione e' nella sezione notifiche, proprieta' email
-                    email="${line:19}" # salva indirizzo email
-                    email="$( stripspaces "$email" )" # rimuovi eventuali spazi prima e dopo
+                    email="$( getafterequal ${line} )" # salva indirizzo email
+                    email="$( stripspaces "$email" )"  # rimuovi eventuali spazi prima e dopo
                 fi
         
             done < <(stdbuf -oL "${configcmd[@]}") # l'output di questo comando e' letto riga per riga
@@ -303,7 +309,7 @@ function configs(){
     fi
 
     # Se non viene saltato il test di connessione con la flag...
-    if [[ "$*" != *"--skip-conn-test"*  &&  "$*" != *"--test"* ]] ; then
+    if [[ "$*" != *"--skip-conn-test"*  &&  "'$*'" != *"--test"* ]] ; then
         if ! ismyip "$ip" ; then # il controllo fallo solo se sei sulla macchina locale
             
             # controllo con ping la raggiungibilita' della macchina
