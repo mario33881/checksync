@@ -1,9 +1,7 @@
 #!./libs/bats-core/bin/bats
 
-load 'libs/bats-support/load'
-load 'libs/bats-assert/load'
 
-SCRIPT_PATH="$BATS_TEST_DIRNAME/../utils/"
+SCRIPT_PATH="$BATS_TEST_DIRNAME/../bin/utils/"
 SCRIPT_PATH="$( cd $SCRIPT_PATH ; pwd )/printdiffs.sh"
 
 TEST_FOLDER="$BATS_TEST_DIRNAME/printdiffs_testing"
