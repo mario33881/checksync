@@ -1,6 +1,8 @@
 # CHECKSYNC
 ![](https://i.imgur.com/rTSjWyR.png)
 
+Travis master branch status : ![](https://travis-ci.org/mario33881/checksync.svg?branch=master)
+
 This script **checks if two machines are synchronized** (they have the same files)
 
 Questo script **controlla se due macchine sono sincronizzate** (hanno gli stessi file)
@@ -40,7 +42,8 @@ su l'altro o su entrambe mostrando anche le informazioni precedentemente ricavat
 Questa funzione **richiede in input il file di output del comando cat**.
 
 > Questo script contiene anche la funzione ```bytesToHuman()``` per rendere la **dimensione in byte facilmente leggibile**
-e ```header_filesections()```, ```printtable()``` e ```divide_filesections()``` per **comporre l'html** da mandare via email
+e ```header_filesections()```, ```printtable()``` e ```divide_filesections()``` per **comporre l'html** da mandare via email.
+Inoltre sono presenti le funzioni ```echo_stats()``` e ```html_stats()``` per visualizzare, rispettivamente su terminale e su email, le statistiche
 
 <a href="#sezioni-pagina-">Torna a sezioni pagina</a>
 
@@ -58,7 +61,6 @@ la loro interpretazione.
     * **logpath**          : percorso file di log
     * **ip**               : ip macchina remota
     * **user**             : username macchina remota
-    * **pass**             : password macchina remota
     * **scp_path**         : percorso remoto a cui copiare script
     * **getfiles_path**    : percorso file con informazioni files computer
     * **diffout_path**     : percorso file con differenze delle informazioni files
@@ -68,6 +70,10 @@ la loro interpretazione.
     altri parametri non sono necessari o hanno un valore di default
     > Nota: e' possibile leggere piu' **informazioni relative al file di configurazione nella sezione**
     di questa documentazione **"Esecuzione script"**
+
+    Durante la sua esecuzione lo script **verifica** che tutti i **percorsi da analizzare siano esistenti**,
+    che la **macchina remota sia raggiungibile** attraverso il comando **ping** e che la **destinazione
+    dello script** sulla macchina remota sia effettivamente **presente** sul computer remoto.
 
 2. Poi checksync.sh si occupa di fare il **source dello script logger.sh**
 La prima informazione del file di configurazione che viene usata e' il percorso del file di log,
@@ -89,14 +95,14 @@ utilizzato per **creare le cartelle e il file di log**.
 5. **ottiene lista file su questo pc con lo script "getfiles.sh"**, identificandoli con l'hostname della macchina locale (output comando "hostname")
 Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguire** prima la funzione ```findtree()``` e poi ```getstatnmd5()```
 
-            findtree()
+        findtree()
 
     La funzione ```findtree()``` **usa le informazioni ricavate dal file di configurazione** per comporre il **comando find**
     da usare per trovare i **percorsi di tutti i file** presenti sulla macchina,
     eventualmente **ignorando con -prune alcuni file/percorsi**
-    > Tutti i percorsi verranno **scritti sul file** ```/var/tmp/checksync/find_output.csv
+    > Tutti i percorsi verranno **scritti sul file** ```/var/tmp/checksync/find_output.csv```
 
-            getstatnmd5()
+        getstatnmd5()
 
     La funzione ```getstatnmd5()``` si occupa di **scorrrere il file** scritto dalla funzione ```findtree()``` e di
     **scrivere sul file $getfiles_path il percorso dei file**, **dimensione** in byte e **timestamp di ultima modifica** dati dal **comando stat**,
@@ -104,7 +110,7 @@ Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguir
 
     > **find, stat e md5sum** verranno **eseguiti** con ```sudo -n``` (modalita' **non interattiva**) perche' altrimenti
     i comandi porteranno ad un **"Permission Denied"**, se il comando da errore perche' il **sudo richiede la password**
-    i comandi verranno **rieseguiti senza sudo**. Questo permette la **continuita' dello script** senza interruzione
+    i comandi verranno **rieseguiti senza sudo**. Questo permette la **continuita' dello script** senza interazione
     da parte dell'utente ma impedisce di verificare che alcuni file siano realmente uguali tra le due macchine
 
     > E' consigliato **impostare il file sudoers** per permettere ad un account creato solo per lo script
@@ -124,14 +130,14 @@ e scorrendo il suo output scrive il contenuto riga per riga sul log locale
 8. Il **file log del computer remoto viene cancellato** via ssh con il comando "rm"
     > **Non ha senso avere due file di log**, di cui **uno incompleto** perche' contiene solo la parte di esecuzione remota
 
-9. Viene eseguito il **cat tra i due output** dei "getfiles.sh" via ssh, ordinando l'**output** del cat **in ordine alfabetico** con sort -V.
+9. Viene eseguito il **cat tra i due output** dei "getfiles.sh" via ssh, ordinando l'**output** del cat **in ordine alfabetico** con "sort -V".
 L'output del comando viene scritto sul file il cui percorso e' specificato sul file di configurazione specificato nella sezione "[OUTPUT]", proprieta' "diffout"
 
 10. **Visualizza/manda via mail le informazioni** ricavate con lo **script "printdiffs.sh"**.
 Lo script checksync.sh fa il **source dello script** "printdiffs.sh" rendendo disponibile la sua funzione
 principale, ```printdiffs()```
 
-            printdiffs()
+        printdiffs()
 
     La funzione **richiede come parametro il percorso del file output del comando cat**
     che contiene tutte le informazioni dei file sia del server remoto, sia del server locale.
@@ -152,6 +158,9 @@ principale, ```printdiffs()```
     **Per visualizzare le informazioni** ```printdiffs()``` usera' le funzioni:
     * ```bytesToHuman()``` per rendere la **dimensione in byte** facilmente **leggibile**
     * ```header_filesections()```, ```printtable()``` e ```divide_filesections()``` per **comporre l'html** da mandare via email
+    * ```echo_stats()``` per visualizzare le statistiche su terminale e ```html_stats()``` per inserire le statistiche nell'email 
+        > Le statistiche indicano il numero dei file rilevati su entrambe le macchine, quanti di questi sono presenti su entrambe
+        le macchine e quanti sono effettivamente uguali (questo dato e' visualizzato anche in percentuale) 
 
 Se al programma "checksync.sh" viene passata come **secondo parametro** la flag "**-m**", "**-me**" o "**-em**"
 l'**output in formato html** verra' memorizzato in una variabile e **utilizzato dalla funzione**
@@ -292,19 +301,6 @@ In particolare:
 ```
 checksync-master/
 ├ bin/
-│   ├ test/
-│   │   ├ configfiles/
-│   │   │   └ ...
-│   │   ├ getfiles_testing/
-│   │   │   └ ...
-│   │   ├ libs/
-│   │   │   └ ...
-│   │   ├ printdiffs_testing/
-│   │   │   └ ...
-│   │   ├ test_configs.bats
-│   │   ├ test_getfiles.bats
-│   │   ├ test_logger.bats
-│   │   └ test_printdiffs.bats
 │   ├ utils/
 │   │   ├ getfiles.sh
 │   │   ├ logger.sh
@@ -314,12 +310,44 @@ checksync-master/
 │   └ checksync.sh
 ├ doc/
 │   └ README.md
+├ test/
+│   ├ configfiles/
+│   │   └ ...
+│   ├ getfiles_testing/
+│   │   └ ...
+│   ├ libs/
+│   │   └ ...
+│   ├ printdiffs_testing/
+│   │   └ ...
+│   ├ test_configs.bats
+│   ├ test_getfiles.bats
+│   ├ test_logger.bats
+│   ├ test_printdiffs.bats
+│   └ testall.sh
 └ README.md
 ```
 
 <a href="#sezioni-pagina-">Torna a sezioni pagina</a>
 
 ## Changelog ![](https://i.imgur.com/SDKHpak.png)
+
+**04_01 2019-06-20:** <br>
+Features:
+* Tutti gli script hanno sezione main
+    > Questo permette di testare anche quelle funzioni 
+    che non venivano testate in precedenza
+* Ora le configurazioni possono contenere spazi
+    > ad esempio "ip = x.x.x.x" ora e' valido,
+    prima era obbligatorio scrivere "ip=x.x.x.x"
+* E' stata aggiunta una progress bar per 
+tracciare l'esecuzione dello script
+    > L'ultimo punto percentuale ( 96% )
+    scompare dopo un secondo per non intaccare
+    in nessun modo l'output dello script
+
+Modifiche:
+* Spostati i test da ```/bin/test``` a ```/test```
+> Questo evita allo script di copiare via scp anche i file di test
 
 **03_05 2019-06-19:** <br>
 Features:

@@ -2,7 +2,7 @@
 
 #
 # Nome programma    : checksync
-# Versione          : 03_05
+# Versione          : 04_01
 # Autore            : Zenaro Stefano
 # Github repository : https://github.com/mario33881/checksync
 #
@@ -27,6 +27,8 @@
 #
 
 boold=false
+show_progressbar=0 # true
+
 SCRIPTPATH="$( cd "$( dirname "$0" )" || exit ; pwd -P )"  # percorso questo script
 SCRIPTDIR=$( basename "$SCRIPTPATH" )                    # nome cartella in cui risiede questo script
 
@@ -39,13 +41,13 @@ output_flag="$2" # flag di output ( -e = echo , -em o -me = mail e echo, -m = ma
 # logpath          : percorso file di log
 # ip               : ip macchina remota
 # user             : username macchina remota
-# pass             : password macchina remota
 # scp_path         : percorso remoto a cui copiare script
 # getfiles_path    : percorso file con informazioni files computer
 # diffout_path     : percorso file con differenze delle informazioni files
 # send_email       : booleano che indica se inviare l'output via mail
 # email            : indirizzo email a cui mandare l'output ( se send_email=true )
 source "$SCRIPTPATH/utils/configs.sh"
+configs "$1" "$2" "$3"
 
 # prendi percorso dove salvare i log dalle configurazioni e importa il logger 
 # ( che scrivera' sul file $SCRIPT_LOG )
@@ -59,6 +61,9 @@ source "$SCRIPTPATH/utils/configs.sh"
 # ERROR       : messaggio errore
 SCRIPT_LOG="$logpath"
 source "$SCRIPTPATH/utils/logger.sh"
+
+# script per visualizzazione informazioni
+source "$SCRIPTPATH/utils/printdiffs.sh"
 
 
 function checksuccess(){
@@ -132,75 +137,114 @@ function email_sender(){
 }
 
 
-SCRIPTENTRY
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    SCRIPTENTRY
 
-# copio script sul server remoto
-cmd=( scp -r "$SCRIPTPATH" "${user}@${ip}:${scp_path}" )
-checksuccess 20 "Copia script su server remoto" "${cmd[@]}"
+    # se sull'output viene effettuato pipe, disattiva progress bar
+    if [ ! -t 1 ] ; then
+        show_progressbar=1
+    fi
 
-# salvo file di configurazione sul server remoto
-cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/" )
-checksuccess 21 "Copia file di configurazione sul server remoto" "${cmd[@]}"
+    # copio script sul server remoto
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Copiando script su server remoto...               ####                              ( 12 %% )\r'
+    fi
 
-# ottengo lista file su questo pc, identificandoli con l'hostname della macchina locale
-curr_hostname=$( hostname )
-cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" "$curr_hostname" )
-checksuccess 22 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
+    cmd=( scp -r "$SCRIPTPATH" "${user}@${ip}:${scp_path}" )
+    checksuccess 20 "Copia script su server remoto" "${cmd[@]}"
 
-# ottengo lista file su server remoto, identificandoli con l'hostname della macchina remota
-inifilename=$( basename "$configfile" ) # recupero nome file di configurazione
-cmd=( ssh "${user}@${ip}" "rem_hostname=\$( hostname ) ; ${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" '"$rem_hostname"' )
+    # salvo file di configurazione sul server remoto
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Copiando config su server remoto...               ########                          ( 24 %% )\r'
+    fi
 
-checksuccess 23 "Operazione lista file macchina remota" "${cmd[@]}"
+    cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/" )
+    checksuccess 21 "Copia file di configurazione sul server remoto" "${cmd[@]}"
 
-# recupero log del computer remoto
-cmd=( ssh "${user}@${ip}" "cat '$logpath'" )
+    # ottengo lista file su questo pc, identificandoli con l'hostname della macchina locale
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando informazioni file su server locale... ############                      ( 36 %% )\r'
+    fi
 
-while IFS= read -r line
-# scorri log
-do
-    echo "$line" >> "$logpath" # inserisco nel file di log le righe del file di log remoto
-done < <( checksuccess 24 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
+    curr_hostname=$( hostname )
+    cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" "$curr_hostname" )
+    checksuccess 22 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
 
-# rimuovo log incompleto remoto
-cmd=( ssh "${user}@${ip}" "rm '$logpath'" )
-checksuccess 25 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
+    # ottengo lista file su server remoto, identificandoli con l'hostname della macchina remota
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando informazioni file su server remoto... ################                  ( 48 %% )\r'
+    fi
 
-# eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
-if [ "$boold" = true ] ; then
-    echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
+    inifilename=$( basename "$configfile" ) # recupero nome file di configurazione
+    cmd=( ssh "${user}@${ip}" "rem_hostname=\$( hostname ) ; ${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" '"$rem_hostname"' )
+
+    checksuccess 23 "Operazione lista file macchina remota" "${cmd[@]}"
+
+    # recupero log del computer remoto
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando file log su server remoto...          ####################              ( 60 %% )\r'
+    fi
+
+    cmd=( ssh "${user}@${ip}" "cat '$logpath'" )
+
+    while IFS= read -r line
+    # scorri log
+    do
+        echo "$line" >> "$logpath" # inserisco nel file di log le righe del file di log remoto
+    done < <( checksuccess 24 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
+
+    # rimuovo log incompleto remoto
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Cancellando file log su server remoto...          ########################          ( 72 %% )\r'
+    fi
+
+    cmd=( ssh "${user}@${ip}" "rm '$logpath'" )
+    checksuccess 25 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
+
+    # eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Riordinando info file sui server...               ############################      ( 84 %% )\r'
+    fi
+
+    if [ "$boold" = true ] ; then
+        echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
+    fi
+
+    ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path" # -V risolve problemi con file con "-" nel nome
+    status_code="$?"
+
+    DEBUG "Comando da eseguire: 'ssh ""${user}"@"${ip}"" "cat "$getfiles_path"" | cat ""$getfiles_path"" -  | sort -V > ""$diffout_path""'"
+    DEBUG "Descrizione comando: 'Operazione recupero output lista file e cat tra liste file locale e remota'"
+    DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
+
+    if [ "$status_code" -ne 0 ] ; then
+        # se l'operazione NON ha avuto successo, esci con status code 9
+        echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
+        exit 26
+    fi
+
+    # visualizza le informazioni ricavate
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Analizzando info file sui server...               ################################  ( 96 %% )\r'
+        sleep 1
+        printf '                                                                                             \r'
+    fi
+
+    if [ "$output_flag" = "-m" ] ; then
+        # manda solo la mail con le informazioni
+        cmd=( email_sender )
+
+    elif [ "$output_flag" = "-me" ] || [ "$output_flag" = "-em" ] ; then
+        # manda mail e visualizza le informazioni su terminale
+        cmd=( printdiffs "$diffout_path" )
+        "${cmd[@]}"
+        cmd=( email_sender )
+    else
+        # visualizza le informazioni su terminale
+        cmd=( printdiffs "$diffout_path" )
+    fi
+
+    checksuccess 27 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
+
+    SCRIPTEXIT
 fi
-
-ssh "${user}@${ip}" "cat $getfiles_path" | cat "$getfiles_path" -  | sort -V > "$diffout_path" # -V risolve problemi con file con "-" nel nome
-status_code="$?"
-
-DEBUG "Comando da eseguire: 'ssh ""${user}"@"${ip}"" "cat "$getfiles_path"" | cat ""$getfiles_path"" -  | sort -V > ""$diffout_path""'"
-DEBUG "Descrizione comando: 'Operazione recupero output lista file e cat tra liste file locale e remota'"
-DEBUG "Codice errore in caso di fallimento esecuzione: '9'"
-
-if [ "$status_code" -ne 0 ] ; then
-    # se l'operazione NON ha avuto successo, esci con status code 9
-    echo "Operazione recupero output lista file e cat tra liste file locale e remota FALLITA (status code $status_code )"
-    exit 26
-fi
-
-# visualizza le informazioni ricavate
-source "$SCRIPTPATH/utils/printdiffs.sh"
-
-if [ "$output_flag" = "-m" ] ; then
-    # manda solo la mail con le informazioni
-    cmd=( email_sender )
-
-elif [ "$output_flag" = "-me" ] || [ "$output_flag" = "-em" ] ; then
-    # manda mail e visualizza le informazioni su terminale
-    cmd=( printdiffs "$diffout_path" )
-    "${cmd[@]}"
-    cmd=( email_sender )
-else
-    # visualizza le informazioni su terminale
-    cmd=( printdiffs "$diffout_path" )
-fi
-
-checksuccess 27 "Visualizzazione differenze tra le due macchine" "${cmd[@]}"
-
-SCRIPTEXIT

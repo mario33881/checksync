@@ -31,11 +31,11 @@ fi
 # logpath          : percorso file di log
 # ip               : ip macchina remota
 # user             : username macchina remota
-# pass             : password macchina remota
 # scp_path         : percorso remoto a cui copiare script
 # getfiles_path    : percorso file con informazioni files computer
 # diffout_path     : percorso file con differenze delle informazioni files
 source "$SCRIPTPATH/configs.sh"
+configs "$1" "$2" "$3"
 
 # prendi percorso dove salvare i log dalle configurazioni e importa il logger
 # ( che scrivera' sul file $SCRIPT_LOG )
@@ -202,8 +202,10 @@ function getfiles(){
 }
 
 
-SCRIPTENTRY
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    SCRIPTENTRY
 
-getfiles # ottengo lista file diversi
+    getfiles # ottengo lista file diversi
 
-SCRIPTEXIT
+    SCRIPTEXIT
+fi
