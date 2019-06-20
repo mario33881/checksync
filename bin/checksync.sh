@@ -27,6 +27,8 @@
 #
 
 boold=false
+show_progressbar=0 # true
+
 SCRIPTPATH="$( cd "$( dirname "$0" )" || exit ; pwd -P )"  # percorso questo script
 SCRIPTDIR=$( basename "$SCRIPTPATH" )                    # nome cartella in cui risiede questo script
 
@@ -138,31 +140,51 @@ function email_sender(){
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     SCRIPTENTRY
 
+    # se sull'output viene effettuato pipe, disattiva progress bar
+    if [ ! -t 1 ] ; then
+        show_progressbar=1
+    fi
+
     # copio script sul server remoto
-    printf 'Copiando script su server remoto...               ####                              ( 12 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Copiando script su server remoto...               ####                              ( 12 %% )\r'
+    fi
+
     cmd=( scp -r "$SCRIPTPATH" "${user}@${ip}:${scp_path}" )
     checksuccess 20 "Copia script su server remoto" "${cmd[@]}"
 
     # salvo file di configurazione sul server remoto
-    printf 'Copiando config su server remoto...               ########                          ( 24 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Copiando config su server remoto...               ########                          ( 24 %% )\r'
+    fi
+
     cmd=( scp "$configfile" "${user}@${ip}:${scp_path}/" )
     checksuccess 21 "Copia file di configurazione sul server remoto" "${cmd[@]}"
 
     # ottengo lista file su questo pc, identificandoli con l'hostname della macchina locale
-    printf 'Recuperando informazioni file su server locale... ############                      ( 36 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando informazioni file su server locale... ############                      ( 36 %% )\r'
+    fi
+
     curr_hostname=$( hostname )
     cmd=( "$SCRIPTPATH/utils/getfiles.sh" "$configfile" "$curr_hostname" )
     checksuccess 22 "Operazione recupero lista file di questa macchina" "${cmd[@]}"
 
     # ottengo lista file su server remoto, identificandoli con l'hostname della macchina remota
-    printf 'Recuperando informazioni file su server remoto... ################                  ( 48 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando informazioni file su server remoto... ################                  ( 48 %% )\r'
+    fi
+
     inifilename=$( basename "$configfile" ) # recupero nome file di configurazione
     cmd=( ssh "${user}@${ip}" "rem_hostname=\$( hostname ) ; ${scp_path}/${SCRIPTDIR}/utils/getfiles.sh ${scp_path}/${inifilename}" '"$rem_hostname"' )
 
     checksuccess 23 "Operazione lista file macchina remota" "${cmd[@]}"
 
     # recupero log del computer remoto
-    printf 'Recuperando file log su server remoto...          ####################              ( 60 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Recuperando file log su server remoto...          ####################              ( 60 %% )\r'
+    fi
+
     cmd=( ssh "${user}@${ip}" "cat '$logpath'" )
 
     while IFS= read -r line
@@ -172,12 +194,18 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     done < <( checksuccess 24 "Recupero file log remoto" "${cmd[@]}" ) # comando con stdout
 
     # rimuovo log incompleto remoto
-    printf 'Cancellando file log su server remoto...          ########################          ( 72 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Cancellando file log su server remoto...          ########################          ( 72 %% )\r'
+    fi
+
     cmd=( ssh "${user}@${ip}" "rm '$logpath'" )
     checksuccess 25 "Rimuovo file log remoto perche' incompleto" "${cmd[@]}"
 
     # eseguo cat tra i due output, ordinando l'output del cat in ordine alfabetico
-    printf 'Riordinando info file sui server...               ############################      ( 84 %% )\r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Riordinando info file sui server...               ############################      ( 84 %% )\r'
+    fi
+
     if [ "$boold" = true ] ; then
         echo -e "\nOperazione recupero output lista file e cat tra liste file locale e remota"
     fi
@@ -196,9 +224,12 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     fi
 
     # visualizza le informazioni ricavate
-    printf 'Analizzando info file sui server...               ################################  ( 96 %% )\r'
-    sleep 1
-    printf '                                                                                             \r'
+    if [ $show_progressbar -eq 0 ] ; then
+        printf 'Analizzando info file sui server...               ################################  ( 96 %% )\r'
+        sleep 1
+        printf '                                                                                             \r'
+    fi
+
     if [ "$output_flag" = "-m" ] ; then
         # manda solo la mail con le informazioni
         cmd=( email_sender )
