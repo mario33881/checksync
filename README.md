@@ -1,6 +1,8 @@
 # CHECKSYNC
 ![](https://i.imgur.com/rTSjWyR.png)
 
+Travis master branch status : ![](https://travis-ci.org/mario33881/checksync.svg?branch=master)
+
 This script **checks if two machines are synchronized** (they have the same files)
 
 Questo script **controlla se due macchine sono sincronizzate** (hanno gli stessi file)
@@ -299,19 +301,6 @@ In particolare:
 ```
 checksync-master/
 ├ bin/
-│   ├ test/
-│   │   ├ configfiles/
-│   │   │   └ ...
-│   │   ├ getfiles_testing/
-│   │   │   └ ...
-│   │   ├ libs/
-│   │   │   └ ...
-│   │   ├ printdiffs_testing/
-│   │   │   └ ...
-│   │   ├ test_configs.bats
-│   │   ├ test_getfiles.bats
-│   │   ├ test_logger.bats
-│   │   └ test_printdiffs.bats
 │   ├ utils/
 │   │   ├ getfiles.sh
 │   │   ├ logger.sh
@@ -321,6 +310,20 @@ checksync-master/
 │   └ checksync.sh
 ├ doc/
 │   └ README.md
+├ test/
+│   ├ configfiles/
+│   │   └ ...
+│   ├ getfiles_testing/
+│   │   └ ...
+│   ├ libs/
+│   │   └ ...
+│   ├ printdiffs_testing/
+│   │   └ ...
+│   ├ test_configs.bats
+│   ├ test_getfiles.bats
+│   ├ test_logger.bats
+│   ├ test_printdiffs.bats
+│   └ testall.sh
 └ README.md
 ```
 
