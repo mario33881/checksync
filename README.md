@@ -345,6 +345,10 @@ tracciare l'esecuzione dello script
     scompare dopo un secondo per non intaccare
     in nessun modo l'output dello script
 
+Modifiche:
+* Spostati i test da ```/bin/test``` a ```/test```
+> Questo evita allo script di copiare via scp anche i file di test
+
 **03_05 2019-06-19:** <br>
 Features:
 * I percorsi da ignorare possono terminare con "/" e "/."
