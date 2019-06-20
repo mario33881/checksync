@@ -95,14 +95,14 @@ utilizzato per **creare le cartelle e il file di log**.
 5. **ottiene lista file su questo pc con lo script "getfiles.sh"**, identificandoli con l'hostname della macchina locale (output comando "hostname")
 Per prima viene eseguita la funzione ```getfiles()``` che **si occupa di eseguire** prima la funzione ```findtree()``` e poi ```getstatnmd5()```
 
-            findtree()
+        findtree()
 
     La funzione ```findtree()``` **usa le informazioni ricavate dal file di configurazione** per comporre il **comando find**
     da usare per trovare i **percorsi di tutti i file** presenti sulla macchina,
     eventualmente **ignorando con -prune alcuni file/percorsi**
     > Tutti i percorsi verranno **scritti sul file** ```/var/tmp/checksync/find_output.csv```
 
-            getstatnmd5()
+        getstatnmd5()
 
     La funzione ```getstatnmd5()``` si occupa di **scorrrere il file** scritto dalla funzione ```findtree()``` e di
     **scrivere sul file $getfiles_path il percorso dei file**, **dimensione** in byte e **timestamp di ultima modifica** dati dal **comando stat**,
@@ -137,7 +137,7 @@ L'output del comando viene scritto sul file il cui percorso e' specificato sul f
 Lo script checksync.sh fa il **source dello script** "printdiffs.sh" rendendo disponibile la sua funzione
 principale, ```printdiffs()```
 
-            printdiffs()
+        printdiffs()
 
     La funzione **richiede come parametro il percorso del file output del comando cat**
     che contiene tutte le informazioni dei file sia del server remoto, sia del server locale.
@@ -341,7 +341,7 @@ Features:
     prima era obbligatorio scrivere "ip=x.x.x.x"
 * E' stata aggiunta una progress bar per 
 tracciare l'esecuzione dello script
-    > L'ultimo punto percentale ( 96% )
+    > L'ultimo punto percentuale ( 96% )
     scompare dopo un secondo per non intaccare
     in nessun modo l'output dello script
 
